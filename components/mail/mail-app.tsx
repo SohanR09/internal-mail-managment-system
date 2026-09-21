@@ -532,7 +532,7 @@ export function MailApp({
         }}
         onToggle={() => void toggleSidebar()}
       />
-      <div className="mail-header pointer-events-none row-start-1 col-span-2 flex min-w-0 items-center gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
+      <div className="mail-header pointer-events-none row-start-1 col-span-2 flex min-w-0 items-center gap-3 border-b border-border bg-card px-4 py-3 backdrop-blur">
         <div className="pointer-events-auto flex min-w-0 flex-1 items-center gap-2">
           <span className="hidden shrink-0 font-semibold tracking-tight md:inline">
             Northstar Mail
