@@ -1,0 +1,45 @@
+[
+  {
+    "id": "role_admin",
+    "name": "admin",
+    "permissions": [
+      "manage_users",
+      "manage_roles",
+      "view_all_mails",
+      "delete_mails",
+      "manage_settings",
+      "view_audit_logs"
+    ]
+  },
+  {
+    "id": "role_manager",
+    "name": "manager",
+    "permissions": [
+      "view_team_mails",
+      "manage_team_members",
+      "create_mails",
+      "send_mails",
+      "view_reports"
+    ]
+  },
+  {
+    "id": "role_hr",
+    "name": "hr",
+    "permissions": [
+      "manage_employees",
+      "view_employee_data",
+      "create_mails",
+      "send_mails",
+      "view_reports"
+    ]
+  },
+  {
+    "id": "role_employee",
+    "name": "employee",
+    "permissions": [
+      "create_mails",
+      "send_mails",
+      "view_own_mails"
+    ]
+  }
+]

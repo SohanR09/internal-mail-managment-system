@@ -1,0 +1,12 @@
+[
+  {
+    "defaultFolder": "inbox",
+    "pageSize": 25,
+    "refreshIntervalSeconds": 15,
+    "enabledWidgets": [
+      "unread_count",
+      "starred_messages",
+      "recent_conversations"
+    ]
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "userId": "user_jordan",
+    "roleId": "role_admin"
+  },
+  {
+    "userId": "user_maya",
+    "roleId": "role_manager"
+  },
+  {
+    "userId": "user_nora",
+    "roleId": "role_employee"
+  },
+  {
+    "userId": "user_andre",
+    "roleId": "role_employee"
+  },
+  {
+    "userId": "user_hr",
+    "roleId": "role_hr"
+  },
+  {
+    "userId": "user_finance",
+    "roleId": "role_manager"
+  },
+  {
+    "userId": "user_eli",
+    "roleId": "role_employee"
+  }
+]

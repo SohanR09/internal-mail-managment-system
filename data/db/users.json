@@ -1,0 +1,79 @@
+[
+  {
+    "id": "user_jordan",
+    "name": "Jordan Smith",
+    "email": "jordan@northstar.co",
+    "passwordHash": "$2b$10$PhayaUAA3M4slSyGQ0xNbu34.1Q9eg7CUlEFBv/8FnKYNHlMyPwWq",
+    "jobTitle": "System Administrator",
+    "department": "IT",
+    "avatar": null,
+    "isActive": true,
+    "createdAt": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "user_maya",
+    "name": "Maya Chen",
+    "email": "maya@northstar.co",
+    "passwordHash": "$2b$10$PhayaUAA3M4slSyGQ0xNbu34.1Q9eg7CUlEFBv/8FnKYNHlMyPwWq",
+    "jobTitle": "Engineering Manager",
+    "department": "Engineering",
+    "avatar": null,
+    "isActive": true,
+    "createdAt": "2025-01-02T00:00:00Z"
+  },
+  {
+    "id": "user_nora",
+    "name": "Nora Patel",
+    "email": "nora@northstar.co",
+    "passwordHash": "$2b$10$PhayaUAA3M4slSyGQ0xNbu34.1Q9eg7CUlEFBv/8FnKYNHlMyPwWq",
+    "jobTitle": "Software Engineer",
+    "department": "Engineering",
+    "avatar": null,
+    "isActive": true,
+    "createdAt": "2025-01-03T00:00:00Z"
+  },
+  {
+    "id": "user_andre",
+    "name": "Andre Williams",
+    "email": "andre@northstar.co",
+    "passwordHash": "$2b$10$PhayaUAA3M4slSyGQ0xNbu34.1Q9eg7CUlEFBv/8FnKYNHlMyPwWq",
+    "jobTitle": "Product Designer",
+    "department": "Design",
+    "avatar": null,
+    "isActive": true,
+    "createdAt": "2025-01-04T00:00:00Z"
+  },
+  {
+    "id": "user_hr",
+    "name": "People Operations",
+    "email": "people@northstar.co",
+    "passwordHash": "$2b$10$PhayaUAA3M4slSyGQ0xNbu34.1Q9eg7CUlEFBv/8FnKYNHlMyPwWq",
+    "jobTitle": "HR Manager",
+    "department": "HR",
+    "avatar": null,
+    "isActive": true,
+    "createdAt": "2025-01-05T00:00:00Z"
+  },
+  {
+    "id": "user_finance",
+    "name": "Finance Team",
+    "email": "finance@northstar.co",
+    "passwordHash": "$2b$10$PhayaUAA3M4slSyGQ0xNbu34.1Q9eg7CUlEFBv/8FnKYNHlMyPwWq",
+    "jobTitle": "Finance Manager",
+    "department": "Finance",
+    "avatar": null,
+    "isActive": true,
+    "createdAt": "2025-01-06T00:00:00Z"
+  },
+  {
+    "id": "user_eli",
+    "name": "Eli Brooks",
+    "email": "eli@northstar.co",
+    "passwordHash": "$2b$10$PhayaUAA3M4slSyGQ0xNbu34.1Q9eg7CUlEFBv/8FnKYNHlMyPwWq",
+    "jobTitle": "Data Analyst",
+    "department": "Analytics",
+    "avatar": null,
+    "isActive": true,
+    "createdAt": "2025-01-07T00:00:00Z"
+  }
+]

@@ -1,0 +1,106 @@
+[
+  {
+    "userId": "user_jordan",
+    "theme": "dark",
+    "density": "comfortable",
+    "defaultFolder": "inbox",
+    "sidebarCollapsed": false,
+    "rowsPerPage": 25,
+    "refreshIntervalSeconds": 15,
+    "notificationsEnabled": true,
+    "signature": "Jordan Smith\nSystem Administrator",
+    "widgets": [
+      "unread_count",
+      "starred_messages",
+      "recent_conversations"
+    ]
+  },
+  {
+    "userId": "user_maya",
+    "theme": "dark",
+    "density": "comfortable",
+    "defaultFolder": "inbox",
+    "sidebarCollapsed": false,
+    "rowsPerPage": 25,
+    "refreshIntervalSeconds": 15,
+    "notificationsEnabled": true,
+    "signature": "Maya Chen\nEngineering Manager",
+    "widgets": [
+      "unread_count",
+      "starred_messages"
+    ]
+  },
+  {
+    "userId": "user_nora",
+    "theme": "dark",
+    "density": "comfortable",
+    "defaultFolder": "inbox",
+    "sidebarCollapsed": false,
+    "rowsPerPage": 25,
+    "refreshIntervalSeconds": 15,
+    "notificationsEnabled": true,
+    "signature": "Nora Patel\nSoftware Engineer",
+    "widgets": [
+      "unread_count"
+    ]
+  },
+  {
+    "userId": "user_andre",
+    "theme": "dark",
+    "density": "comfortable",
+    "defaultFolder": "inbox",
+    "sidebarCollapsed": false,
+    "rowsPerPage": 25,
+    "refreshIntervalSeconds": 15,
+    "notificationsEnabled": true,
+    "signature": "Andre Williams\nProduct Designer",
+    "widgets": [
+      "unread_count",
+      "recent_conversations"
+    ]
+  },
+  {
+    "userId": "user_hr",
+    "theme": "dark",
+    "density": "comfortable",
+    "defaultFolder": "inbox",
+    "sidebarCollapsed": false,
+    "rowsPerPage": 25,
+    "refreshIntervalSeconds": 15,
+    "notificationsEnabled": true,
+    "signature": "People Operations\nHR Manager",
+    "widgets": [
+      "unread_count",
+      "starred_messages"
+    ]
+  },
+  {
+    "userId": "user_finance",
+    "theme": "dark",
+    "density": "comfortable",
+    "defaultFolder": "inbox",
+    "sidebarCollapsed": false,
+    "rowsPerPage": 25,
+    "refreshIntervalSeconds": 15,
+    "notificationsEnabled": true,
+    "signature": "Finance Team\nFinance Manager",
+    "widgets": [
+      "unread_count"
+    ]
+  },
+  {
+    "userId": "user_eli",
+    "theme": "dark",
+    "density": "comfortable",
+    "defaultFolder": "inbox",
+    "sidebarCollapsed": false,
+    "rowsPerPage": 25,
+    "refreshIntervalSeconds": 15,
+    "notificationsEnabled": true,
+    "signature": "Eli Brooks\nData Analyst",
+    "widgets": [
+      "unread_count",
+      "recent_conversations"
+    ]
+  }
+]
