@@ -23,23 +23,30 @@ export interface UserRole {
 
 export interface Mail {
   id: string;
+  threadId: string;
+  parentMailId: string | null;
   senderId: string;
+  to: string[];
+  cc: string[];
+  bcc: string[];
   subject: string;
-  body: string;
+  bodyHtml: string;
+  bodyText: string;
+  isDraft: boolean;
+  sentAt: string | null;
   createdAt: string;
-  updatedAt: string;
 }
 
 export interface UserMail {
   userId: string;
   mailId: string;
-  folder: 'inbox' | 'sent' | 'draft' | 'archive' | 'trash';
+  folder: 'inbox' | 'sent' | 'draft' | 'archive' | 'trash' | 'spam' | 'snoozed';
   isRead: boolean;
   isStarred: boolean;
   isImportant: boolean;
-  categoryId?: string;
-  snoozedUntil?: string;
-  deletedAt?: string;
+  categoryId: string | null;
+  snoozedUntil: string | null;
+  deletedAt: string | null;
 }
 
 export interface MailCategory {
@@ -53,6 +60,11 @@ export interface DashboardSettings {
   pageSize: number;
   refreshIntervalSeconds: number;
   enabledWidgets: string[];
+}
+
+export interface UserVersion {
+  userId: string;
+  version: number;
 }
 
 export interface UserDashboardSettings {

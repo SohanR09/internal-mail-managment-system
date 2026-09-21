@@ -9,6 +9,7 @@ import {
   MailCategory,
   DashboardSettings,
   UserDashboardSettings,
+  UserVersion,
 } from './types';
 
 const DB_DIR = path.join(process.cwd(), 'data', 'db');
@@ -330,5 +331,21 @@ export const db = {
       settings[index] = { ...settings[index], ...updates };
       await writeCollection('user-dashboard-settings', settings);
     }
+  },
+
+  async getUserVersion(userId: string): Promise<number> {
+    const versions = readCollection<UserVersion>('versions');
+    return versions.find((entry) => entry.userId === userId)?.version ?? 1;
+  },
+
+  async incrementUserVersion(userId: string): Promise<void> {
+    const versions = readCollection<UserVersion>('versions');
+    const index = versions.findIndex((entry) => entry.userId === userId);
+    if (index === -1) {
+      versions.push({ userId, version: 1 });
+    } else {
+      versions[index] = { ...versions[index], version: versions[index].version + 1 };
+    }
+    await writeCollection('versions', versions);
   },
 };
