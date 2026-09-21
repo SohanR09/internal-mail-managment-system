@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import { randomUUID } from 'crypto';
 import { signToken } from '@/lib/auth/jwt';
 import { db } from '@/lib/db';
+import { rateLimiters } from '@/lib/redis';
 
 const signupSchema = z
   .object({
@@ -28,6 +29,11 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { name, username, password, department, jobTitle } = signupSchema.parse(body);
+    const forwardedFor = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+    const identifier = forwardedFor || request.headers.get('x-real-ip') || 'unknown-ip';
+    const limit = await rateLimiters.loginLimit(`signup:${identifier}`);
+    const rateHeaders = { 'Retry-After': String(Math.max(1, limit.resetAfter)), 'RateLimit-Limit': '5', 'RateLimit-Remaining': String(Math.max(0, limit.remaining)), 'RateLimit-Reset': String(Math.max(1, limit.resetAfter)) };
+    if (!limit.success) return NextResponse.json({ error: 'Too many signup attempts', retryAfter: limit.resetAfter }, { status: 429, headers: rateHeaders });
 
     const email = `${username}@northstar.co`;
 

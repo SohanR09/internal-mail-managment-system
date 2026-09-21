@@ -5,7 +5,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const secret = JWT_SECRET ? new TextEncoder().encode(JWT_SECRET) : null;
 
 const publicRoutes = ['/login', '/signup'];
-const publicApiRoutes = ['/api/auth/login', '/api/auth/signup'];
+const publicApiRoutes = ['/api/auth/login', '/api/auth/signup', '/api/health'];
 const staticAssets = [
   '/favicon.ico',
   '/robots.txt',
