@@ -51,7 +51,7 @@ export function SettingsForm({ userSettings, globalSettings, isAdmin }: Props) {
       if (!response.ok) throw new Error('Failed to save settings')
       setStatus('Settings saved successfully')
     } catch (error) {
-      console.error('[v0] Settings save error:', error)
+      setStatus('Failed to save settings')
       setStatus('Failed to save settings')
     } finally {
       setSaving(false)
@@ -80,7 +80,7 @@ export function SettingsForm({ userSettings, globalSettings, isAdmin }: Props) {
       if (!response.ok) throw new Error('Failed to save global settings')
       setStatus('Global settings saved successfully')
     } catch (error) {
-      console.error('[v0] Global settings save error:', error)
+      setStatus('Failed to save global settings')
       setStatus('Failed to save global settings')
     } finally {
       setSaving(false)

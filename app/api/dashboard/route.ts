@@ -193,7 +193,7 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('[v0] Dashboard error:', error);
+    
     return NextResponse.json({ error: 'Unable to fetch dashboard data' }, { status: 500 });
   }
 }

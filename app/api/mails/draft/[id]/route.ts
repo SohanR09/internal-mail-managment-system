@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireUser } from '@/lib/auth/session';
 import { z } from 'zod';
+import { bodyTooLargeResponse, tooLarge } from '@/lib/http';
 import sanitizeHtml from 'sanitize-html';
 
 const draftSchema = z.object({ to: z.array(z.string().email()).default([]), cc: z.array(z.string().email()).default([]), bcc: z.array(z.string().email()).default([]), subject: z.string().max(500).default(''), bodyHtml: z.string().max(200_000).default(''), bodyText: z.string().max(200_000).default('') });

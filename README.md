@@ -1,33 +1,23 @@
-# internal-mail-managment-system
+# Northstar Mail
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+## Environment variables
+- `JWT_SECRET` (required): strong secret used to sign sessions.
+- `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` (or Vercel KV-compatible `KV_REST_API_URL` and `KV_REST_API_TOKEN`): optional Redis cache and rate limiting credentials.
+- `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL`: preview redirect configuration when present.
 
-## Built with v0
+## Demo accounts
+Use the seeded local JSON accounts provided by the project environment. Do not use these credentials in production; replace them with managed users before deployment.
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+## JSON persistence schema
+- `users.json`: user identity, profile, password hash, status, and timestamps.
+- `roles.json`: role identifiers and names.
+- `user-roles.json`: user-to-role assignments.
+- `mails.json`: canonical message content, recipients, sender, thread, and timestamps.
+- `user-mails.json`: per-user folder, read/starred flags, categories, snooze, and deletion state.
+- `mail-categories.json`: category identifiers and display names.
+- `user-dashboard-settings.json`: per-user dashboard preferences and enabled widgets.
+- `dashboard-settings.json`: admin-managed global defaults.
+- `versions.json`: per-user cache invalidation versions.
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_m12YftzJC7xDevzlhqbVxQw0opWr)
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-## Learn More
-
-To learn more, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+## Persistence note
+The JSON files are read/written through `lib/db` only. On Vercel's deployed serverless runtime the project files are read-only, so writes will not persist. Keep all storage behind `lib/db` so it can be swapped for a database.

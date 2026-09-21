@@ -5,6 +5,7 @@ import { requireUser } from '@/lib/auth/session';
 import type { Mail, UserMail } from '@/lib/db/types';
 import sanitizeHtml from 'sanitize-html';
 import { z } from 'zod';
+import { bodyTooLargeResponse, tooLarge } from '@/lib/http';
 
 const draftSchema = z.object({
   id: z.string().optional(),
@@ -19,6 +20,7 @@ const draftSchema = z.object({
 function responseError(error: unknown) { return NextResponse.json({ error: error instanceof Error ? error.message : 'Unauthorized' }, { status: 401 }); }
 
 export async function POST(request: Request) {
+  if (tooLarge(request)) return bodyTooLargeResponse();
   try {
     const user = await requireUser();
     const input = draftSchema.parse(await request.json());

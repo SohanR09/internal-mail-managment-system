@@ -2,7 +2,8 @@ import { getSession } from '@/lib/auth/session';
 import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import { headers, cookies } from 'next/headers';
-import { DashboardClient } from '@/components/dashboard/dashboard-client';
+import dynamic from 'next/dynamic';
+const DashboardClient = dynamic(() => import('@/components/dashboard/dashboard-client').then((module) => module.DashboardClient), { loading: () => <p className="p-8 text-sm text-muted-foreground">Loading dashboard...</p> });
 
 export const metadata = {
   title: 'Dashboard | Northstar Mail',
