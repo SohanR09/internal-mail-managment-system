@@ -768,7 +768,7 @@ const MailRow = memo(function MailRow({
 }: MailRowProps) {
   return (
     <article
-      className={`mail-row flex items-center gap-4 border-b border-border px-6 cursor-pointer hover:bg-accent ${rowHeight} ${item.state.isRead ? "bg-card" : "bg-accent/20"}`}
+      className={`mail-row flex items-center gap-4 border-b border-border px-6 cursor-pointer hover:bg-accent ${rowHeight} ${item.state.isRead ? "bg-accent/20" : "bg-card"}`}
     >
       <input
         aria-label={`Select ${item.mail.subject}`}
