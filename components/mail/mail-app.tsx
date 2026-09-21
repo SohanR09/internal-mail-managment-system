@@ -608,21 +608,21 @@ export function MailApp({
               <button
                 type="button"
                 onClick={() => router.push("/profile")}
-                className="block w-full rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
+                className="block w-full rounded px-2 py-1.5 text-left text-sm hover:bg-accent cursor-pointer"
               >
                 Profile
               </button>
               <button
                 type="button"
                 onClick={() => router.push("/settings")}
-                className="block w-full rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
+                className="block w-full rounded px-2 py-1.5 text-left text-sm hover:bg-accent cursor-pointer"
               >
                 Settings
               </button>
               <button
                 type="button"
                 onClick={() => void signOut()}
-                className="block w-full rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
+                className="block w-full rounded px-2 py-1.5 text-left text-sm hover:bg-accent cursor-pointer"
               >
                 Sign out
               </button>
