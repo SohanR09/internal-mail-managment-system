@@ -270,14 +270,7 @@ export function MailApp({
     }, 300);
     return () => window.clearTimeout(timer);
   }, [query, filters, folder, router]);
-  useEffect(() => {
-    if (!selectedMailId) return;
-    void fetch(`/api/mails/${selectedMailId}`, { method: "PATCH" })
-      .then(() => {
-        void fetch("/api/mails/counts", { cache: "no-store" });
-      })
-      .catch(() => undefined);
-  }, [selectedMailId]);
+  const openedMailRef = useRef<string | undefined>(undefined);
   useEffect(() => {
     const onEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && selectedMailId) {
@@ -335,6 +328,15 @@ export function MailApp({
     fetchWithEtag,
     { revalidateOnFocus: false },
   );
+  useEffect(() => {
+    if (!selectedMailId || openedMailRef.current === selectedMailId) return;
+    openedMailRef.current = selectedMailId;
+    void fetch(`/api/mails/${selectedMailId}/read`, { method: "PATCH" })
+      .then(() => Promise.all([mutate(), mutateCounts(), mutateThread()]))
+      .catch(() => {
+        openedMailRef.current = undefined;
+      });
+  }, [selectedMailId, mutate, mutateCounts, mutateThread]);
   const mailVersion = useRef(counts?.version ?? 0);
   const previousInboxCount = useRef<number | null>(null);
   useEffect(() => {
