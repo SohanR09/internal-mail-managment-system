@@ -27,6 +27,7 @@ import {
   UserCircleIcon,
   LayoutDashboardIcon,
   Trash2Icon,
+  TriangleAlertIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -527,7 +528,19 @@ export function MailApp({
     setComposeOpen(true);
   }
   return (
-    <main className="mail-shell grid h-dvh min-h-0 grid-cols-[auto_minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] overflow-hidden bg-background text-foreground">
+  <>
+    <div className="flex min-h-dvh items-center justify-center bg-background px-6 py-10 text-foreground md:hidden">
+      <section className="w-full max-w-sm rounded-2xl border border-border bg-card p-7 text-center shadow-lg" role="alert">
+        <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <TriangleAlertIcon aria-hidden="true" className="size-7" />
+        </div>
+        <h1 className="mt-5 text-xl font-semibold">No access on mobile</h1>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          Northstar Mail is currently optimized for tablet and desktop screens. Please use a larger display to access your inbox.
+        </p>
+      </section>
+    </div>
+    <main className="mail-shell hidden h-dvh min-h-0 grid-cols-[auto_minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] overflow-hidden bg-background text-foreground md:grid">
       <MailSidebar
         collapsed={sidebarCollapsed}
         folder={folder}
@@ -725,7 +738,8 @@ export function MailApp({
           parentMailId={composeOptions.parentMailId}
         />
       ) : null}
-    </main>
+      </main>
+  </>
   );
 }
 function optimisticState(
