@@ -17,9 +17,17 @@ export async function GET(request: Request) {
   const page = Math.max(1, Number(params.get('page') ?? '1') || 1);
   const pageSize = Math.min(100, Math.max(1, Number(params.get('pageSize') ?? '25') || 25));
   const query = (params.get('q') ?? '').trim().toLowerCase();
+  const sort = params.get('sort') === 'oldest' ? 'oldest' : 'newest';
+  const unread = params.get('unread') === 'true';
+  const starred = params.get('starred') === 'true';
+  const sender = (params.get('sender') ?? '').trim().toLowerCase();
+  const category = (params.get('category') ?? '').trim().toLowerCase();
+  const from = params.get('from');
+  const to = params.get('to');
+  const hasAttachment = params.get('hasAttachment') === 'true';
   const { mails, states, users, categories } = await getMailData(session.user.id);
   const now = Date.now();
-  const items = states.map((state) => { const mail = mails.find((item) => item.id === state.mailId); return mail ? toMailItem(mail, state, users, categories) : null; }).filter((item): item is ReturnType<typeof toMailItem> => item !== null).filter((item) => matchesFolder(item.state, folder, now)).filter((item) => !query || `${item.mail.subject} ${item.mail.bodyText} ${item.sender?.name ?? ''}`.toLowerCase().includes(query)).sort((a, b) => Date.parse(b.mail.sentAt ?? b.mail.createdAt) - Date.parse(a.mail.sentAt ?? a.mail.createdAt));
+  const items = states.map((state) => { const mail = mails.find((item) => item.id === state.mailId); return mail ? toMailItem(mail, state, users, categories) : null; }).filter((item): item is ReturnType<typeof toMailItem> => item !== null).filter((item) => matchesFolder(item.state, folder, now)).filter((item) => !query || `${item.mail.subject} ${item.mail.bodyText} ${item.sender?.name ?? ''}`.toLowerCase().includes(query)).filter((item) => !unread || !item.state.isRead).filter((item) => !starred || item.state.isStarred).filter((item) => !sender || item.sender?.email.toLowerCase().includes(sender) || item.sender?.name.toLowerCase().includes(sender)).filter((item) => !category || item.category?.id.toLowerCase() === category || item.category?.name.toLowerCase().includes(category)).filter((item) => !from || Date.parse(item.mail.sentAt ?? item.mail.createdAt) >= Date.parse(from)).filter((item) => !to || Date.parse(item.mail.sentAt ?? item.mail.createdAt) <= Date.parse(`${to}T23:59:59.999Z`)).filter((item) => !hasAttachment).sort((a, b) => { const difference = Date.parse(a.mail.sentAt ?? a.mail.createdAt) - Date.parse(b.mail.sentAt ?? b.mail.createdAt); return sort === 'oldest' ? difference : -difference; });
   const version = await db.getUserVersion(session.user.id); const tag = etag(session.user.id, version);
   if (request.headers.get('if-none-match') === tag) return new NextResponse(null, { status: 304, headers: { ETag: tag } });
   const response = NextResponse.json({ items: items.slice((page - 1) * pageSize, page * pageSize), total: items.length, page, pageSize }); response.headers.set('ETag', tag); return response;
