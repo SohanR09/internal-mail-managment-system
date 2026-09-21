@@ -128,7 +128,7 @@ export function MailApp({
   useEffect(() => {
     if (selectedMailId || typeof window === "undefined") return;
     const storedMailId = window.localStorage.getItem(`northstar:selected-mail:${folder}`);
-    // if (storedMailId) router.replace(`/mail/${folder}/${storedMailId}`, { scroll: false });
+    if (storedMailId) router.replace(`/mail/${folder}/${storedMailId}`, { scroll: false });
   }, [folder, selectedMailId]);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
@@ -844,7 +844,7 @@ function ReadingPane({
   onReply: (mode: "reply" | "replyAll" | "forward") => void;
 }) {
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto">
       <div className="flex items-center gap-3 border-b border-border px-6 py-4">
         <button
           type="button"
