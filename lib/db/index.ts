@@ -7,6 +7,7 @@ import {
   Mail,
   UserMail,
   MailCategory,
+  MailFolderDefinition,
   DashboardSettings,
   UserDashboardSettings,
   UserVersion,
@@ -73,6 +74,9 @@ async function writeCollection<T>(
 }
 
 export const db = {
+  async getMailFolders(): Promise<MailFolderDefinition[]> {
+    return readCollection<MailFolderDefinition>("mail-folders").sort((a, b) => a.order - b.order);
+  },
   async getAllRoles(): Promise<Role[]> {
     return readCollection<Role>("roles");
   },

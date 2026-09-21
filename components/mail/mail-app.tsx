@@ -26,6 +26,7 @@ import {
   LogOutIcon,
   UserCircleIcon,
   LayoutDashboardIcon,
+  Trash2Icon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -66,31 +67,18 @@ type DashboardSettingsResponse = {
 type Folder =
   | "inbox"
   | "starred"
-  | "snoozed"
   | "sent"
   | "drafts"
   | "all"
-  | "trash"
-  | "spam";
-const folders: Folder[] = [
-  "inbox",
-  "starred",
-  "snoozed",
-  "sent",
-  "drafts",
-  "all",
-  "trash",
-  "spam",
-];
+  | "trash";
+const folders: Folder[] = ["inbox", "starred", "sent", "drafts", "all", "trash"];
 const labels: Record<Folder, string> = {
   inbox: "Inbox",
   starred: "Starred",
-  snoozed: "Snoozed",
   sent: "Sent",
   drafts: "Drafts",
   all: "All mail",
   trash: "Trash",
-  spam: "Spam",
 };
 const cache = new Map<string, { etag: string | null; data: unknown }>();
 async function fetchWithEtag<T>(url: string): Promise<T> {
@@ -270,14 +258,7 @@ export function MailApp({
     }, 300);
     return () => window.clearTimeout(timer);
   }, [query, filters, folder, router]);
-  useEffect(() => {
-    if (!selectedMailId) return;
-    void fetch(`/api/mails/${selectedMailId}`, { method: "PATCH" })
-      .then(() => {
-        void fetch("/api/mails/counts", { cache: "no-store" });
-      })
-      .catch(() => undefined);
-  }, [selectedMailId]);
+  const openedMailRef = useRef<string | undefined>(undefined);
   useEffect(() => {
     const onEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && selectedMailId) {
@@ -335,6 +316,15 @@ export function MailApp({
     fetchWithEtag,
     { revalidateOnFocus: false },
   );
+  useEffect(() => {
+    if (!selectedMailId || openedMailRef.current === selectedMailId) return;
+    openedMailRef.current = selectedMailId;
+    void fetch(`/api/mails/${selectedMailId}/read`, { method: "PATCH" })
+      .then(() => Promise.all([mutate(), mutateCounts(), mutateThread()]))
+      .catch(() => {
+        openedMailRef.current = undefined;
+      });
+  }, [selectedMailId, mutate, mutateCounts, mutateThread]);
   const mailVersion = useRef(counts?.version ?? 0);
   const previousInboxCount = useRef<number | null>(null);
   useEffect(() => {
@@ -873,6 +863,17 @@ function ReadingPane({
         </button> */}
         <button
           type="button"
+          aria-label="Move mail to trash"
+          title="Move to trash"
+          onClick={() => {
+            void onAction(data.mail.mail.id, "trash").then(onBack);
+          }}
+          className="ml-auto rounded-md p-2 text-destructive hover:bg-destructive/10 cursor-pointer"
+        >
+          <Trash2Icon data-icon="inline-start" />
+        </button>
+        <button
+          type="button"
           aria-label="Star message"
           onClick={() =>
             void onAction(
@@ -880,7 +881,7 @@ function ReadingPane({
               data.mail.state.isStarred ? "unstar" : "star",
             )
           }
-          className="ml-auto text-lg cursor-pointer"
+          className="text-lg cursor-pointer"
         >
           {data.mail.state.isStarred ? "★" : "☆"}
         </button>

@@ -50,6 +50,13 @@ export interface UserMail {
   deletedAt: string | null;
 }
 
+export interface MailFolderDefinition {
+  id: string;
+  label: string;
+  icon: "inbox" | "star" | "send" | "file-text" | "mail" | "trash";
+  order: number;
+}
+
 export interface MailCategory {
   id: string;
   name: string;
