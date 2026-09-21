@@ -14,6 +14,7 @@ import {
 
 const DB_DIR = path.join(process.cwd(), "data", "db");
 const mutexes = new Map<string, Promise<void>>();
+const runtimeCollections = new Map<string, unknown[]>();
 function getMutex(filePath: string): Promise<void> {
   if (!mutexes.has(filePath)) mutexes.set(filePath, Promise.resolve());
   return mutexes.get(filePath)!;
@@ -28,6 +29,8 @@ function getFilePath(collection: string): string {
   return path.join(DB_DIR, `${collection}.json`);
 }
 function readCollection<T>(collection: string): T[] {
+  const runtimeValue = runtimeCollections.get(collection);
+  if (runtimeValue) return structuredClone(runtimeValue) as T[];
   ensureDbDir();
   const filePath = getFilePath(collection);
   if (!fs.existsSync(filePath)) return [];
@@ -43,19 +46,30 @@ async function writeCollection<T>(
 ): Promise<void> {
   ensureDbDir();
   const filePath = getFilePath(collection);
-  await getMutex(filePath);
-  const writePromise = new Promise<void>((resolve, reject) => {
-    const tempPath = `${filePath}.tmp`;
-    fs.writeFile(tempPath, JSON.stringify(data, null, 2), (err) => {
-      if (err) reject(err);
-      else
-        fs.rename(tempPath, filePath, (renameError) =>
-          renameError ? reject(renameError) : resolve(),
-        );
-    });
-  });
-  setMutex(filePath, writePromise);
-  await writePromise;
+  const previousWrite = getMutex(filePath);
+  const writePromise = previousWrite.then(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        const tempPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
+        fs.writeFile(tempPath, JSON.stringify(data, null, 2), (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          fs.rename(tempPath, filePath, (renameError) =>
+            renameError ? reject(renameError) : resolve(),
+          );
+        });
+      }),
+  );
+  setMutex(filePath, writePromise.catch(() => undefined));
+  try {
+    await writePromise;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException)?.code !== "EROFS" && (error as NodeJS.ErrnoException)?.code !== "EACCES") throw error;
+    runtimeCollections.set(collection, structuredClone(data));
+    console.warn(`[v0] Using runtime storage for ${collection}; filesystem is read-only.`);
+  }
 }
 
 export const db = {
