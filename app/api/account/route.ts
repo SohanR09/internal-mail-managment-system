@@ -21,7 +21,7 @@ export async function DELETE(request: Request) {
     const adminCount = adminRole ? assignments.filter((a) => a.roleId === adminRole.id && allUsers.find((u) => u.id === a.userId)?.isActive).length : 0;
     if (adminRole && assignments.some((a) => a.userId === user.id && a.roleId === adminRole.id) && adminCount <= 1) return NextResponse.json({ error: 'The last admin cannot delete their account' }, { status: 409 });
     await db.updateUser(user.id, { isActive: false, name: 'Deleted user' });
-    await Promise.all([db.removeAllUserRoles(user.id), db.removeAllUserDashboardSettings(user.id), db.removeAllUserMails(user.id)]);
+    await Promise.all([db.removeAllUserRoles(user.id), db.removeUserDashboardSettings(user.id), db.removeAllUserMails(user.id)]);
     const cookieStore = await cookies(); cookieStore.delete('session');
     return NextResponse.json({ success: true });
   } catch { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }); }

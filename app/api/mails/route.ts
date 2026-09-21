@@ -6,6 +6,7 @@ import { getSession } from '@/lib/auth/session';
 import { etag, getMailData, matchesFolder, MAIL_FOLDERS, toMailItem, type MailFolder } from '@/lib/mail-api';
 import type { Mail, UserMail } from '@/lib/db/types';
 import sanitizeHtml from 'sanitize-html';
+import { bodyTooLargeResponse, tooLarge } from '@/lib/http';
 import { z } from 'zod';
 
 export async function GET(request: Request) {
@@ -39,6 +40,7 @@ function initials(name: string): string { return name.split(/\\s+/).filter(Boole
 function errorResponse(error: unknown, status = 400) { return NextResponse.json({ error: error instanceof Error ? error.message : 'Unable to send mail' }, { status }); }
 
 export async function POST(request: Request) {
+  if (tooLarge(request)) return bodyTooLargeResponse();
   try {
     const sender = await requireUser();
     const input = sendSchema.parse(await request.json());

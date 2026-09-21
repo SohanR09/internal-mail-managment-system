@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import type { Mail, MailCategory, User, UserMail } from '@/lib/db/types';
+import sanitizeHtml from 'sanitize-html';
 
 export const MAIL_FOLDERS = ['inbox', 'starred', 'snoozed', 'sent', 'drafts', 'all', 'trash', 'spam'] as const;
 export type MailFolder = (typeof MAIL_FOLDERS)[number];
@@ -42,7 +43,7 @@ export async function getMailData(userId: string): Promise<{ mails: Mail[]; stat
 export function toMailItem(mail: Mail, state: UserMail, users: User[], categories: MailCategory[]): MailItem {
   const sender = users.find((user) => user.id === mail.senderId);
   return {
-    mail,
+    mail: { ...mail, bodyHtml: sanitizeHtml(mail.bodyHtml) },
     state,
     sender: sender ? { id: sender.id, name: sender.name, initials: initials(sender.name), email: sender.email } : null,
     category: state.categoryId ? categories.find((category) => category.id === state.categoryId) ?? null : null,

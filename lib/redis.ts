@@ -10,7 +10,7 @@ const memoryWarned = new Set<string>();
 
 function logWarning(msg: string) {
   if (!memoryWarned.has(msg)) {
-    console.warn(`[Redis] ${msg}`);
+   
     memoryWarned.add(msg);
   }
 }

@@ -31,7 +31,7 @@ export async function signToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): Promi
 export async function verifyToken(token: string): Promise<JWTPayload> {
   try {
     const verified = await jwtVerify(token, getSecret());
-    return verified.payload as JWTPayload;
+    return verified.payload as unknown as JWTPayload;
   } catch (error) {
     throw new Error('Invalid or expired token');
   }
