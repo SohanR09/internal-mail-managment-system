@@ -16,8 +16,9 @@ export async function GET(request: NextRequest) {
   counts.drafts = states.filter((state) => state.folder === 'draft').length;
   const version = await db.getUserVersion(session.user.id);
   const tag = etag(session.user.id, version);
-  if (request.headers.get('if-none-match') === tag) return new NextResponse(null, { status: 304, headers: { ETag: tag } });
-  const response = NextResponse.json({ counts });
+  const since = Number(new URL(request.url).searchParams.get('since') ?? '0');
+  if (since === version || request.headers.get('if-none-match') === tag) return new NextResponse(null, { status: 304, headers: { ETag: tag, 'X-Mail-Version': String(version) } });
+  const response = NextResponse.json({ counts, version });
   response.headers.set('ETag', tag);
   return response;
 }

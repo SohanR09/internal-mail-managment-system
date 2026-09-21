@@ -1,14 +1,14 @@
 'use client'
 
 import useSWR, { mutate as mutateCache } from 'swr'
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { ComposeWindow, type Recipient } from '@/components/mail/compose-window'
 import type { Mail, MailCategory, UserMail } from '@/lib/db/types'
 
 type MailItem = { mail: Mail; state: UserMail; sender: { id: string; name: string; initials: string; email: string } | null; category: MailCategory | null }
 type MailResponse = { items: MailItem[]; total: number; page: number; pageSize: number }
-type CountsResponse = { counts: Record<string, number> }
+type CountsResponse = { counts: Record<string, number>; version?: number }
 type ThreadResponse = { mail: MailItem; thread: MailItem[] }
 type DashboardSettingsResponse = {
   sidebarCollapsed?: boolean
@@ -35,9 +35,37 @@ export function MailApp({ initialSettings }: { initialSettings?: DashboardSettin
   const filterQuery = new URLSearchParams({ folder, page: String(filters.page), pageSize: String(settings.rowsPerPage ?? 25), q: query, sort: filters.sort, unread: String(filters.unread), starred: String(filters.starred), sender: filters.sender, category: filters.category, from: filters.from, to: filters.to })
   const mailKey = `/api/mails?${filterQuery.toString()}`
   const refreshInterval = ((settings.refreshIntervalSeconds ?? 15) * 1000)
-  const { data, error, isLoading, mutate } = useSWR<MailResponse>(mailKey, fetchWithEtag, { keepPreviousData: true, refreshInterval, refreshWhenHidden: false, revalidateOnFocus: true })
-  const { data: counts, mutate: mutateCounts } = useSWR<CountsResponse>('/api/mails/counts', fetchWithEtag, { refreshInterval, refreshWhenHidden: false })
-  const { data: threadData, mutate: mutateThread } = useSWR<ThreadResponse>(selectedMailId ? `/api/mails/${selectedMailId}` : null, fetchWithEtag)
+  const { data, error, isLoading, mutate } = useSWR<MailResponse>(mailKey, fetchWithEtag, { keepPreviousData: true, refreshInterval: 0, refreshWhenHidden: false, revalidateOnFocus: false })
+  const { data: counts, mutate: mutateCounts } = useSWR<CountsResponse>('/api/mails/counts', fetchWithEtag, { refreshInterval: 0, refreshWhenHidden: false, revalidateOnFocus: false })
+  const { data: threadData, mutate: mutateThread } = useSWR<ThreadResponse>(selectedMailId ? `/api/mails/${selectedMailId}` : null, fetchWithEtag, { revalidateOnFocus: false })
+  const mailVersion = useRef(counts?.version ?? 0)
+  const previousInboxCount = useRef<number | null>(null)
+  useEffect(() => { if (counts?.version !== undefined) mailVersion.current = counts.version }, [counts?.version])
+  useEffect(() => {
+    let timer: number | undefined
+    let stopped = false
+    let delay = refreshInterval
+    const poll = async () => {
+      if (stopped || document.hidden) return
+      try {
+        const response = await fetch(`/api/mails/counts?since=${mailVersion.current}`, { cache: 'no-store' })
+        if (response.status === 304) { delay = refreshInterval; return }
+        if (!response.ok) throw new Error('Polling failed')
+        const next = await response.json() as CountsResponse
+        const inboxCount = next.counts.inbox ?? 0
+        if (settings.notificationsEnabled !== false && previousInboxCount.current !== null && inboxCount > previousInboxCount.current) setNotice('New inbox mail')
+        previousInboxCount.current = inboxCount
+        mailVersion.current = next.version ?? mailVersion.current
+        await Promise.all([mutate(), mutateCounts(next, { revalidate: false }), selectedMailId ? mutateThread() : Promise.resolve()])
+        delay = refreshInterval
+      } catch { delay = Math.min(refreshInterval * 4, delay * 2); setNotice('Live updates are temporarily delayed') }
+      if (!stopped && !document.hidden) timer = window.setTimeout(() => void poll(), delay)
+    }
+    const start = () => { if (timer) window.clearTimeout(timer); delay = refreshInterval; void poll() }
+    const onVisibility = () => { if (!document.hidden) start() }
+    window.addEventListener('focus', start); window.addEventListener('online', start); document.addEventListener('visibilitychange', onVisibility); timer = window.setTimeout(() => void poll(), refreshInterval)
+    return () => { stopped = true; if (timer) window.clearTimeout(timer); window.removeEventListener('focus', start); window.removeEventListener('online', start); document.removeEventListener('visibilitychange', onVisibility) }
+  }, [refreshInterval, settings.notificationsEnabled, selectedMailId, mutate, mutateCounts, mutateThread])
   const items = data?.items ?? []; const itemIds = useMemo(() => items.map((item) => item.mail.id), [items]); const allSelected = itemIds.length > 0 && itemIds.every((id) => selected.includes(id))
   async function toggleSidebar() { const next = !sidebarCollapsed; setSidebarCollapsed(next); try { const response = await fetch('/api/settings/me', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sidebarCollapsed: next }) }); if (!response.ok) throw new Error('Unable to save settings') } catch { setSidebarCollapsed(!next); setNotice('Unable to save sidebar preference') } }
   async function signOut() { await fetch('/api/auth/logout', { method: 'POST' }); await mutateCache(() => undefined, { revalidate: false }); router.push('/login') }
