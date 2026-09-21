@@ -580,7 +580,17 @@ export function MailApp({
                   size="icon"
                   aria-label="Open account menu"
                   className="pointer-events-auto rounded-full"
-                />
+                >
+                  <Avatar>
+                    <AvatarImage src={session?.avatar ?? undefined} alt="" />
+                    <AvatarFallback>
+                      {session?.name
+                        ?.split(" ")
+                        .map((part) => part[0])
+                        .join("") ?? "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
               }
             />
             <DropdownMenuContent align="end" className="w-64">
