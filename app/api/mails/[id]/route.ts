@@ -22,6 +22,18 @@ export async function GET(request: NextRequest, context: RouteContext) {
   return response;
 }
 
+export async function DELETE(_request: NextRequest, context: RouteContext) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { id } = await context.params;
+  const state = (await db.getAllUserMails()).find((item) => item.userId === session.user.id && item.mailId === id);
+  if (!state) return NextResponse.json({ error: 'Mail not found' }, { status: 404 });
+  if (state.folder !== 'trash') return NextResponse.json({ error: 'Mail must be in trash' }, { status: 409 });
+  await db.removeUserMail(session.user.id, id);
+  await db.incrementUserVersion(session.user.id);
+  return NextResponse.json({ ok: true });
+}
+
 export async function PATCH(_request: NextRequest, context: RouteContext) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
