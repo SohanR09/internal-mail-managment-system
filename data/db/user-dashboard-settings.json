@@ -102,5 +102,21 @@
       "unread_count",
       "recent_conversations"
     ]
+  },
+  {
+    "userId": "user_60566edd-119e-4013-b011-3b3cabc82219",
+    "theme": "light",
+    "density": "comfortable",
+    "defaultFolder": "inbox",
+    "sidebarCollapsed": false,
+    "rowsPerPage": 25,
+    "refreshIntervalSeconds": 15,
+    "notificationsEnabled": true,
+    "signature": "",
+    "widgets": [
+      "unread_count",
+      "starred_messages",
+      "recent_conversations"
+    ]
   }
 ]

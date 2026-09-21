@@ -38,7 +38,7 @@ export async function middleware(request: NextRequest) {
   if (publicRoutes.includes(pathname)) {
     if (isValidSession) {
       // Redirect authenticated users away from login/signup
-      return NextResponse.redirect(new URL('/', request.url));
+      return NextResponse.redirect(new URL('/mail/inbox', request.url));
     }
     return NextResponse.next();
   }

@@ -26,5 +26,9 @@
   {
     "userId": "user_eli",
     "roleId": "role_employee"
+  },
+  {
+    "userId": "user_60566edd-119e-4013-b011-3b3cabc82219",
+    "roleId": "role_employee"
   }
 ]

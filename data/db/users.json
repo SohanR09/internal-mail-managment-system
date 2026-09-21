@@ -75,5 +75,16 @@
     "avatar": null,
     "isActive": true,
     "createdAt": "2025-01-07T00:00:00Z"
+  },
+  {
+    "id": "user_60566edd-119e-4013-b011-3b3cabc82219",
+    "name": "Taylor Morgan",
+    "email": "taylor-morgan@northstar.co",
+    "passwordHash": "$2b$10$WDssEogXdoiZ5vd99w2Ls.kWgLowgfLeLNwG6dHFbXsHrYYFj2H0m",
+    "jobTitle": "Product Engineer",
+    "department": "Engineering",
+    "avatar": null,
+    "isActive": true,
+    "createdAt": "2026-09-21T10:07:57.504Z"
   }
 ]
