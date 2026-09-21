@@ -120,11 +120,11 @@ export function MailApp({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const params = useParams<{ folder?: string; mailId?: string }>();
+  const params = useParams<{ folder?: string }>();
   const folder = (
     folders.includes(params.folder as Folder) ? params.folder : "inbox"
   ) as Folder;
-  const [selectedMailId, setSelectedMailId] = useState<string | undefined>(params.mailId);
+  const [selectedMailId, setSelectedMailId] = useState<string>();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [activeUserCount, setActiveUserCount] = useState(0);
@@ -269,7 +269,7 @@ export function MailApp({
     };
     window.addEventListener("keydown", onEscape);
     return () => window.removeEventListener("keydown", onEscape);
-  }, [folder, router, selectedMailId]);
+  }, [selectedMailId]);
   useEffect(() => {
     const focus = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
@@ -707,26 +707,6 @@ export function MailApp({
           threadId={composeOptions.threadId}
           parentMailId={composeOptions.parentMailId}
         />
-      ) : null}
-      {selectedMailId ? (
-        <section className="min-h-0 flex-1 overflow-hidden">
-          {threadData ? (
-            <ReadingPane
-              data={threadData}
-              onBack={() => setSelectedMailId(undefined)}
-              onMove={() => undefined}
-              onAction={act}
-              onReply={startReply}
-            />
-          ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
-              <p className="text-lg font-medium">Mail not found</p>
-              <Button variant="outline" onClick={() => router.back()}>
-                Back to {folder}
-              </Button>
-            </div>
-          )}
-        </section>
       ) : null}
     </main>
   );
