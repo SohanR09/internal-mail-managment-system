@@ -26,6 +26,9 @@ export function SettingsForm({ userSettings, globalSettings, isAdmin }: Props) {
   const [globalSettings_, setGlobalSettings_] = useState<Partial<DashboardSettings> | null>(globalSettings || null)
   const [saving, setSaving] = useState(false)
   const [status, setStatus] = useState('')
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteConfirmation, setDeleteConfirmation] = useState('')
   const hydrated = useRef(false)
 
   useEffect(() => {
@@ -53,6 +56,16 @@ export function SettingsForm({ userSettings, globalSettings, isAdmin }: Props) {
     } finally {
       setSaving(false)
     }
+  }
+
+  async function deleteAccount() {
+    setSaving(true)
+    try {
+      const response = await fetch('/api/account', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: deletePassword, confirmation: deleteConfirmation }) })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error ?? 'Unable to delete account')
+      window.location.assign('/login')
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Unable to delete account') } finally { setSaving(false) }
   }
 
   async function saveGlobalSettings() {
@@ -260,6 +273,9 @@ export function SettingsForm({ userSettings, globalSettings, isAdmin }: Props) {
           </button>
         </div>
       </section>
+
+      <section className="rounded-lg border border-destructive/40 bg-card p-6"><h2 className="text-xl font-semibold text-destructive">Danger zone</h2><p className="mt-2 text-sm text-muted-foreground">Delete your account and remove your personal mail data. Messages other people received are retained.</p><button type="button" onClick={() => setDeleteOpen(true)} className="mt-4 rounded-md border border-destructive px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10">Delete account</button></section>
+      {deleteOpen ? <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4"><div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-lg"><h2 className="text-lg font-semibold">Delete account?</h2><p className="mt-2 text-sm text-muted-foreground">This action cannot be undone. Enter your password and type DELETE to confirm.</p><div className="mt-4 flex flex-col gap-3"><input aria-label="Password" type="password" value={deletePassword} onChange={(event) => setDeletePassword(event.target.value)} placeholder="Password" className="rounded-md border border-border bg-background px-3 py-2 text-sm" /><input aria-label="Type DELETE" value={deleteConfirmation} onChange={(event) => setDeleteConfirmation(event.target.value)} placeholder="Type DELETE" className="rounded-md border border-border bg-background px-3 py-2 text-sm" /></div><div className="mt-5 flex justify-end gap-2"><button type="button" onClick={() => setDeleteOpen(false)} className="rounded-md border border-border px-4 py-2 text-sm">Cancel</button><button type="button" disabled={saving || deleteConfirmation !== 'DELETE' || !deletePassword} onClick={() => void deleteAccount()} className="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground disabled:opacity-50">Delete permanently</button></div></div></div> : null}
 
       {/* Admin Global Settings */}
       {isAdmin && globalSettings_ && (

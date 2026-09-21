@@ -530,5 +530,22 @@
     "isDraft": true,
     "sentAt": null,
     "createdAt": "2026-09-21T10:21:40.066Z"
+  },
+  {
+    "id": "89dffcfb-51ab-46e1-b54d-a7cc87ba0f57",
+    "threadId": "89dffcfb-51ab-46e1-b54d-a7cc87ba0f57",
+    "parentMailId": null,
+    "senderId": "user_jordan",
+    "to": [
+      "eli@northstar.co"
+    ],
+    "cc": [],
+    "bcc": [],
+    "subject": "test mail",
+    "bodyHtml": "<p><strong>Test mail</strong></p><p>Jordan Smith\nSystem Administrator</p>",
+    "bodyText": "Test mail\\n\\nJordan Smith\nSystem Administrator",
+    "isDraft": false,
+    "sentAt": "2026-09-21T11:06:17.568Z",
+    "createdAt": "2026-09-21T11:06:17.568Z"
   }
 ]

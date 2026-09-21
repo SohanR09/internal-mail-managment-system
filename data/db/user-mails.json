@@ -2319,5 +2319,27 @@
     "categoryId": null,
     "snoozedUntil": null,
     "deletedAt": null
+  },
+  {
+    "userId": "user_jordan",
+    "mailId": "89dffcfb-51ab-46e1-b54d-a7cc87ba0f57",
+    "folder": "sent",
+    "isRead": true,
+    "isStarred": false,
+    "isImportant": false,
+    "categoryId": null,
+    "snoozedUntil": null,
+    "deletedAt": null
+  },
+  {
+    "userId": "user_eli",
+    "mailId": "89dffcfb-51ab-46e1-b54d-a7cc87ba0f57",
+    "folder": "inbox",
+    "isRead": false,
+    "isStarred": false,
+    "isImportant": false,
+    "categoryId": null,
+    "snoozedUntil": null,
+    "deletedAt": null
   }
 ]
