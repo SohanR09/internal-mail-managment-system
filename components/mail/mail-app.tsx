@@ -124,7 +124,7 @@ export function MailApp({
   const folder = (
     folders.includes(params.folder as Folder) ? params.folder : "inbox"
   ) as Folder;
-  const selectedMailId = params.mailId;
+  const selectedMailId = useMemo(() => params.mailId, [params.mailId]);
   useEffect(() => {
     if (selectedMailId || typeof window === "undefined") return;
     const storedMailId = window.localStorage.getItem(`northstar:selected-mail:${folder}`);
