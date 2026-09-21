@@ -565,6 +565,7 @@ export function MailApp({
             variant="ghost"
             size="icon"
             aria-label="Refresh"
+            className="cursor-pointer"
             onClick={() => {
               void mutate();
               void mutateCounts();
