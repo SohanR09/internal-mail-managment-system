@@ -43,7 +43,7 @@ export function AdminUsers({
         await fetch("/api/admin/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: JSON.stringify({ ...form, email: `${form.email}@northstar.co` }),
         }),
       );
       setForm({
@@ -89,30 +89,67 @@ export function AdminUsers({
           {message}
         </p>
       ) : null}
-      <section className="rounded-lg border border-border bg-card p-6">
-        <h2 className="mb-4 text-lg font-semibold">Add user</h2>
-        <form onSubmit={addUser} className="grid gap-3 md:grid-cols-3">
-          {(
-            ["name", "email", "password", "jobTitle", "department"] as const
-          ).map((field) => (
+      <section className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              Directory access
+            </p>
+            <h2 className="mt-1 text-lg font-semibold">Add user</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Create a Northstar account and assign its first role.
+            </p>
+          </div>
+          <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+            @northstar.co
+          </span>
+        </div>
+        <form onSubmit={addUser} className="grid gap-4 md:grid-cols-3">
+          <input
+            required
+            placeholder="Full name"
+            value={form.name}
+            onChange={(event) => setForm({ ...form, name: event.target.value })}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
+          <div className="flex min-w-0 rounded-md border border-border bg-background focus-within:ring-2 focus-within:ring-ring">
             <input
-              key={field}
-              required={field !== "jobTitle" && field !== "department"}
-              type={
-                field === "password"
-                  ? "password"
-                  : field === "email"
-                    ? "email"
-                    : "text"
-              }
-              placeholder={field}
-              value={form[field]}
+              required
+              type="text"
+              inputMode="email"
+              pattern="[A-Za-z0-9._%+-]+"
+              title="Enter the email name before @northstar.co"
+              placeholder="email name"
+              value={form.email}
               onChange={(event) =>
-                setForm({ ...form, [field]: event.target.value })
+                setForm({ ...form, email: event.target.value.replace(/\\s/g, "") })
               }
-              className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+              className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm outline-none"
             />
-          ))}
+            <span className="flex items-center border-l border-border px-3 text-sm text-muted-foreground">
+              @northstar.co
+            </span>
+          </div>
+          <input
+            required
+            type="password"
+            placeholder="Temporary password"
+            value={form.password}
+            onChange={(event) => setForm({ ...form, password: event.target.value })}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
+          <input
+            placeholder="Job title (optional)"
+            value={form.jobTitle}
+            onChange={(event) => setForm({ ...form, jobTitle: event.target.value })}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
+          <input
+            placeholder="Department (optional)"
+            value={form.department}
+            onChange={(event) => setForm({ ...form, department: event.target.value })}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
           <select
             value={form.roleId}
             onChange={(event) =>
