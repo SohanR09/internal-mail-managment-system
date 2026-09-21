@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   const response = NextResponse.json({ items: items.slice((page - 1) * pageSize, page * pageSize), total: items.length, page, pageSize }); response.headers.set('ETag', tag); return response;
 }
 
-const sendSchema = z.object({ draftId: z.string().optional(), to: z.array(z.string().email()).default([]), cc: z.array(z.string().email()).default([]), bcc: z.array(z.string().email()).default([]), subject: z.string().max(500).default('(no subject)'), bodyHtml: z.string().max(200_000).default(''), bodyText: z.string().max(200_000).default('') });
+const sendSchema = z.object({ draftId: z.string().optional(), threadId: z.string().optional(), parentMailId: z.string().nullable().optional(), to: z.array(z.string().email()).default([]), cc: z.array(z.string().email()).default([]), bcc: z.array(z.string().email()).default([]), subject: z.string().max(500).default('(no subject)'), bodyHtml: z.string().max(200_000).default(''), bodyText: z.string().max(200_000).default('') });
 
 function initials(name: string): string { return name.split(/\\s+/).filter(Boolean).map((part) => part[0]).join('').slice(0, 2).toUpperCase(); }
 function errorResponse(error: unknown, status = 400) { return NextResponse.json({ error: error instanceof Error ? error.message : 'Unable to send mail' }, { status }); }
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     const cleanBody = sanitizeHtml(input.bodyHtml);
     const bodyHtml = signature ? `${cleanBody}<p>${sanitizeHtml(signature).replace(/\\n/g, '<br>')}</p>` : cleanBody;
     const now = new Date().toISOString();
-    const mail: Mail = { id: input.draftId ?? randomUUID(), threadId: input.draftId ?? randomUUID(), parentMailId: null, senderId: sender.id, to: input.to, cc: input.cc, bcc: input.bcc, subject: input.subject.trim() || '(no subject)', bodyHtml, bodyText: `${input.bodyText}${signature ? `\\n\\n${signature}` : ''}`, isDraft: false, sentAt: now, createdAt: now };
+    const mail: Mail = { id: input.draftId ?? randomUUID(), threadId: input.threadId ?? (input.draftId ?? randomUUID()), parentMailId: input.parentMailId ?? null, senderId: sender.id, to: input.to, cc: input.cc, bcc: input.bcc, subject: input.subject.trim() || '(no subject)', bodyHtml, bodyText: `${input.bodyText}${signature ? `\\n\\n${signature}` : ''}`, isDraft: false, sentAt: now, createdAt: now };
     const previousDraft = input.draftId ? await db.getMailById(input.draftId) : undefined;
     if (previousDraft && previousDraft.senderId === sender.id) await db.updateMail(mail.id, mail);
     else await db.insertMail(mail);
