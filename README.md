@@ -12,7 +12,6 @@ Send, receive, organize, and search mail inside your organization. No external p
 ![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000000?logo=shadcnui&logoColor=white)
 
 </div>
----
 
 ## Table of Contents
 
@@ -38,7 +37,6 @@ Send, receive, organize, and search mail inside your organization. No external p
 
 One **Filters** button holds every filter (unread, starred, attachment, category, sender, date range, sort). Search sits in the header.
 
-![Inbox with the Filters panel open](docs/screenshots/inbox-filters.png)
 <img width="1917" height="967" alt="image" src="https://github.com/user-attachments/assets/178b8b33-fa80-461c-9a9c-acde9d6950a4" />
 
 
@@ -46,7 +44,6 @@ One **Filters** button holds every filter (unread, starred, attachment, category
 
 Opening a mail shows the full conversation with reply, reply all, forward, star, and delete actions.
 
-![Mail thread view](docs/screenshots/mail-thread.png)
 <img width="1912" height="966" alt="image" src="https://github.com/user-attachments/assets/d745304b-2570-460e-a849-974f0c5d16d0" />
 
 
@@ -54,7 +51,6 @@ Opening a mail shows the full conversation with reply, reply all, forward, star,
 
 The sidebar collapses to an icon rail, and unread counts show as badges on the icons.
 
-![Inbox with the sidebar collapsed](docs/screenshots/inbox-collapsed.png)
 <img width="1917" height="965" alt="image" src="https://github.com/user-attachments/assets/b1ab340b-2817-400d-9d3b-9dfef1564013" />
 
 
@@ -62,7 +58,6 @@ The sidebar collapses to an icon rail, and unread counts show as badges on the i
 
 Admins create accounts, assign roles, and activate or deactivate users. There is no public sign-up.
 
-![Admin users page](docs/screenshots/admin-users.png)
 <img width="1432" height="876" alt="image" src="https://github.com/user-attachments/assets/555fbb89-843f-42e4-85a5-1501c560dc5d" />
 
 
