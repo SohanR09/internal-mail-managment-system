@@ -81,17 +81,13 @@ const labels: Record<Folder, string> = {
   all: "All mail",
   trash: "Trash",
 };
-const cache = new Map<string, { etag: string | null; data: unknown }>();
 async function fetchWithEtag<T>(url: string): Promise<T> {
-  const previous = cache.get(url);
   const response = await fetch(url, {
-    headers: previous?.etag ? { "If-None-Match": previous.etag } : undefined,
+    cache: "no-store",
+    headers: { "Cache-Control": "no-cache" },
   });
-  if (response.status === 304 && previous) return previous.data as T;
   if (!response.ok) throw new Error("Unable to load mail");
-  const data = (await response.json()) as T;
-  cache.set(url, { etag: response.headers.get("etag"), data });
-  return data;
+  return (await response.json()) as T;
 }
 function dateLabel(value: string | null): string {
   return value
@@ -318,6 +314,17 @@ export function MailApp({
     { revalidateOnFocus: false },
   );
   useEffect(() => {
+    const syncMailCache = () => {
+      void mutate();
+      void mutateCounts();
+      if (selectedMailId) void mutateThread();
+    };
+    if (typeof BroadcastChannel === "undefined") return;
+    const channel = new BroadcastChannel("northstar-mail-data");
+    channel.addEventListener("message", syncMailCache);
+    return () => channel.close();
+  }, [mutate, mutateCounts, mutateThread, selectedMailId]);
+  useEffect(() => {
     if (!selectedMailId || openedMailRef.current === selectedMailId) return;
     openedMailRef.current = selectedMailId;
     void fetch(`/api/mails/${selectedMailId}/read`, { method: "PATCH" })
@@ -434,8 +441,16 @@ export function MailApp({
           body: value ? JSON.stringify({ value }) : undefined,
         });
         if (!response.ok) throw new Error("Action failed");
-        await mutateCounts();
-        return fetchWithEtag<MailResponse>(mailKey);
+        const [nextData] = await Promise.all([
+          fetchWithEtag<MailResponse>(mailKey),
+          mutateCounts(undefined, { revalidate: true }),
+        ]);
+        if (typeof BroadcastChannel !== "undefined") {
+          const channel = new BroadcastChannel("northstar-mail-data");
+          channel.postMessage({ id, action });
+          channel.close();
+        }
+        return nextData;
       },
       { optimisticData: optimistic, rollbackOnError: true, revalidate: false },
     ).catch(() => setNotice("Unable to update this message"));
@@ -452,10 +467,18 @@ export function MailApp({
           body: JSON.stringify({ ids, action, value }),
         });
         if (!response.ok) throw new Error("Bulk action failed");
-        await mutateCounts();
-        return fetchWithEtag<MailResponse>(mailKey);
+        const [nextData] = await Promise.all([
+          fetchWithEtag<MailResponse>(mailKey),
+          mutateCounts(undefined, { revalidate: true }),
+        ]);
+        if (typeof BroadcastChannel !== "undefined") {
+          const channel = new BroadcastChannel("northstar-mail-data");
+          channel.postMessage({ ids, action });
+          channel.close();
+        }
+        return nextData;
       },
-      { rollbackOnError: true, revalidate: true },
+      { rollbackOnError: true, revalidate: false },
     ).catch(() => setNotice("Unable to update selected messages"));
     setSelected([]);
   }
