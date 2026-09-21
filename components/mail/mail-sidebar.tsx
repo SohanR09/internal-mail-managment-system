@@ -74,7 +74,7 @@ export function MailSidebar({
         type="button"
         aria-current={active ? "page" : undefined}
         onClick={onClick}
-        className={`sidebar-item flex w-full items-center gap-3 rounded-md border-l-2 px-3 py-2 text-left text-sm transition-colors ${active ? "border-primary bg-accent" : "border-transparent hover:bg-accent"}`}
+        className={`sidebar-item flex w-full items-center gap-3 rounded-md border-l-2 px-3 py-2 text-left text-sm transition-colors cursor-pointer ${active ? "border-primary bg-accent" : "border-transparent hover:bg-accent"}`}
       >
         <span className="relative grid size-5 shrink-0 place-items-center">
           {icon &&
@@ -123,7 +123,7 @@ export function MailSidebar({
                   aria-label="Compose"
                   variant="default"
                   size={collapsed ? "icon" : "default"}
-                  className="w-full"
+                  className="w-full cursor-pointer"
                 />
               }
             >
@@ -165,7 +165,7 @@ export function MailSidebar({
                   size={collapsed ? "icon" : "default"}
                   aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                   onClick={onToggle}
-                  className="mt-auto w-full justify-center"
+                  className="mt-auto w-full justify-center cursor-pointer"
                 />
               }
             >
