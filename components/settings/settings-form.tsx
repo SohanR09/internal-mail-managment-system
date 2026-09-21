@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import type { DashboardSettings, UserDashboardSettings } from '@/lib/db/types'
 
 type Props = {
@@ -29,17 +29,6 @@ export function SettingsForm({ userSettings, globalSettings, isAdmin }: Props) {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deletePassword, setDeletePassword] = useState('')
   const [deleteConfirmation, setDeleteConfirmation] = useState('')
-  const hydrated = useRef(false)
-
-  useEffect(() => {
-    if (!hydrated.current) {
-      hydrated.current = true
-      return
-    }
-    const timer = window.setTimeout(() => { void saveUserSettings() }, 250)
-    return () => window.clearTimeout(timer)
-  }, [settings])
-
   async function saveUserSettings() {
     setSaving(true)
     try {
@@ -49,9 +38,15 @@ export function SettingsForm({ userSettings, globalSettings, isAdmin }: Props) {
         body: JSON.stringify(settings),
       })
       if (!response.ok) throw new Error('Failed to save settings')
-      setStatus('Settings saved successfully')
-    } catch (error) {
-      setStatus('Failed to save settings')
+      const saved = await response.json() as UserDashboardSettings
+      const root = document.documentElement
+      root.classList.remove('light', 'dark')
+      if (saved.theme === 'system') root.classList.add(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      else root.classList.add(saved.theme)
+      root.dataset.density = saved.density
+      window.dispatchEvent(new CustomEvent('dashboard-settings-changed', { detail: saved }))
+      setStatus('Saved')
+    } catch {
       setStatus('Failed to save settings')
     } finally {
       setSaving(false)

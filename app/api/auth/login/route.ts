@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
         id: user.id,
         email: user.email,
         name: user.name,
+        mustChangePassword: Boolean(user.mustChangePassword),
       },
     });
   } catch (error) {

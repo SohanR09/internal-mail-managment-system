@@ -13,6 +13,7 @@ export interface User {
   department: string;
   avatar: string | null;
   isActive: boolean;
+  mustChangePassword?: boolean;
   createdAt: string;
 }
 

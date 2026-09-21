@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { getSession } from '@/lib/auth/session'
 import { db } from '@/lib/db'
+import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -54,8 +55,8 @@ export default async function RootLayout({
 
   return (
     <html lang="en" data-theme={theme} data-density={density}>
-      <body className={`antialiased ${theme === 'dark' || (theme === 'system' && true) ? 'dark' : ''}`}>
-        {children}
+      <body className="antialiased">
+        <ThemeProvider initialTheme={theme}><div data-density={density} className="h-full">{children}</div></ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

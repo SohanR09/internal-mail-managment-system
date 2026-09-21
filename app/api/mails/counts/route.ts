@@ -6,14 +6,15 @@ import { etag, getMailData, MAIL_FOLDERS, matchesFolder, type MailFolder } from 
 export async function GET(request: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const { states } = await getMailData(session.user.id);
+  const { states, mails } = await getMailData(session.user.id);
+  const mailById = new Map(mails.map((mail) => [mail.id, mail]));
   const now = Date.now();
   const counts: Record<string, number> = {};
   for (const folder of MAIL_FOLDERS) {
-    counts[folder] = states.filter((state) => matchesFolder(state, folder as MailFolder, now)).length;
+    counts[folder] = states.filter((state) => matchesFolder(state, folder as MailFolder, now, mailById.get(state.mailId))).length;
   }
   counts.inbox = states.filter((state) => matchesFolder(state, 'inbox', now) && !state.isRead).length;
-  counts.drafts = states.filter((state) => state.folder === 'draft').length;
+  counts.drafts = states.filter((state) => state.folder === 'draft' && mailById.get(state.mailId)?.isDraft).length;
   const version = await db.getUserVersion(session.user.id);
   const tag = etag(session.user.id, version);
   const since = Number(new URL(request.url).searchParams.get('since') ?? '0');

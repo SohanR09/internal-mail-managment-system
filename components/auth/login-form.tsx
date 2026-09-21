@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { FormEvent, useState } from 'react'
 import { Button } from '@/components/ui/button'
 
@@ -20,9 +19,9 @@ export function LoginForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
-      const result: { error?: string } = await response.json()
+      const result: { error?: string; user?: { mustChangePassword?: boolean } } = await response.json()
       if (!response.ok) throw new Error(result.error ?? 'Unable to sign in')
-      window.location.assign('/mail/inbox')
+      window.location.assign(result.user?.mustChangePassword ? '/change-password' : '/mail/inbox')
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : 'Unable to sign in')
     } finally {
@@ -50,7 +49,7 @@ export function LoginForm() {
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <Button type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</Button>
         </form>
-        <p className="mt-6 text-center text-sm text-muted-foreground">New to Northstar? <Link className="font-medium text-foreground underline underline-offset-4" href="/signup">Create an account</Link></p>
+        <p className="mt-6 text-center text-sm text-muted-foreground">No account? Contact your administrator.</p>
       </section>
     </main>
   )

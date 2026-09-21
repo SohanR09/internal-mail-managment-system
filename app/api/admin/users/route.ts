@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     if (await db.getUserByEmail(input.email)) return NextResponse.json({ error: 'Email already exists' }, { status: 409 });
     if (!await db.getRoleById(input.roleId)) return NextResponse.json({ error: 'Role not found' }, { status: 400 });
     const id = `user_${randomUUID()}`;
-    await db.insertUser({ id, name: input.name, email: input.email, passwordHash: await bcrypt.hash(input.password, 10), jobTitle: input.jobTitle, department: input.department, avatar: null, isActive: true, createdAt: new Date().toISOString() });
+    await db.insertUser({ id, name: input.name, email: input.email, passwordHash: await bcrypt.hash(input.password, 10), jobTitle: input.jobTitle, department: input.department, avatar: null, isActive: true, mustChangePassword: true, createdAt: new Date().toISOString() });
     await db.insertUserRole({ userId: id, roleId: input.roleId });
     return NextResponse.json({ users: await serializeUsers() }, { status: 201 });
   } catch (error) { return NextResponse.json({ error: error instanceof Error && error.message === 'Forbidden' ? 'Forbidden' : 'Unauthorized' }, { status: error instanceof Error && error.message === 'Forbidden' ? 403 : 401 }); }
