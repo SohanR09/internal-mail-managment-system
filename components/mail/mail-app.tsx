@@ -26,6 +26,7 @@ import {
   LogOutIcon,
   UserCircleIcon,
   LayoutDashboardIcon,
+  Trash2Icon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -862,6 +863,17 @@ function ReadingPane({
         </button> */}
         <button
           type="button"
+          aria-label="Move mail to trash"
+          title="Move to trash"
+          onClick={() => {
+            void onAction(data.mail.mail.id, "trash").then(onBack);
+          }}
+          className="ml-auto rounded-md p-2 text-destructive hover:bg-destructive/10 cursor-pointer"
+        >
+          <Trash2Icon data-icon="inline-start" />
+        </button>
+        <button
+          type="button"
           aria-label="Star message"
           onClick={() =>
             void onAction(
@@ -869,7 +881,7 @@ function ReadingPane({
               data.mail.state.isStarred ? "unstar" : "star",
             )
           }
-          className="ml-auto text-lg cursor-pointer"
+          className="text-lg cursor-pointer"
         >
           {data.mail.state.isStarred ? "★" : "☆"}
         </button>
