@@ -124,7 +124,7 @@ export function MailApp({
   const folder = (
     folders.includes(params.folder as Folder) ? params.folder : "inbox"
   ) as Folder;
-  const selectedMailId = params.mailId;
+  const [selectedMailId, setSelectedMailId] = useState<string | undefined>(params.mailId);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [activeUserCount, setActiveUserCount] = useState(0);
@@ -265,7 +265,7 @@ export function MailApp({
   }, [selectedMailId]);
   useEffect(() => {
     const onEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && selectedMailId) router.back();
+      if (event.key === "Escape" && selectedMailId) setSelectedMailId(undefined);
     };
     window.addEventListener("keydown", onEscape);
     return () => window.removeEventListener("keydown", onEscape);
@@ -458,7 +458,7 @@ export function MailApp({
       setComposeOpen(true);
       return;
     }
-    router.push(`/mail/${folder}/${id}`);
+    setSelectedMailId(id);
   }
   async function signOut() {
     if (isSigningOut) return;
@@ -620,10 +620,10 @@ export function MailApp({
         {selectedMailId && threadData ? (
           <ReadingPane
             data={threadData}
-            onBack={() => router.back()}
+            onBack={() => setSelectedMailId(undefined)}
             onMove={(delta) => {
               const next = itemIds[itemIds.indexOf(selectedMailId) + delta];
-              if (next) router.push(`/mail/${folder}/${next}`);
+              if (next) setSelectedMailId(next);
             }}
             onAction={act}
             onReply={startReply}
@@ -665,7 +665,7 @@ export function MailApp({
                 Unable to load mail.
               </p>
             ) : isLoading && !data ? (
-              <p className="p-6 text-sm text-muted-foreground">Loading mail…</p>
+              <p className="p-6 text-sm text-muted-foreground">Loading mail���</p>
             ) : items.length ? (
               items.map((item) => (
                 <MailRow
@@ -713,7 +713,7 @@ export function MailApp({
           {threadData ? (
             <ReadingPane
               data={threadData}
-              onBack={() => router.back()}
+              onBack={() => setSelectedMailId(undefined)}
               onMove={() => undefined}
               onAction={act}
               onReply={startReply}
