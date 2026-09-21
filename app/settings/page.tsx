@@ -16,7 +16,7 @@ export default async function SettingsPage() {
 
   const defaultFolder = userSettings?.defaultFolder === 'draft' ? 'drafts' : (userSettings?.defaultFolder || 'inbox');
   return (
-    <main className="flex min-h-screen flex-col bg-background text-foreground">
+    <main className="flex h-full min-h-0 flex-col overflow-y-auto bg-background text-foreground">
       <PageHeader title="Settings" backHref={`/mail/${defaultFolder}`} />
       <div className="px-8 py-4">
         <p className="text-sm text-muted-foreground">Manage your email preferences and account settings</p>

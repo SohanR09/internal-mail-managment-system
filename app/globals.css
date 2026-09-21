@@ -179,4 +179,9 @@
   body {
     @apply h-full overflow-hidden bg-background text-foreground;
   }
+
+  #__next {
+    height: 100%;
+    overflow: hidden;
+  }
 }
