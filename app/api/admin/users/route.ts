@@ -37,7 +37,8 @@ export async function POST(request: Request) {
     if (error instanceof Error && error.message === 'Unauthorized') return NextResponse.json({ error: 'Your session has expired. Please sign in again.' }, { status: 401 });
     if (error instanceof Error && error.message === 'Forbidden') return NextResponse.json({ error: 'Only administrators can manage users.' }, { status: 403 });
     console.error('[v0] Admin user operation failed:', error);
-    return NextResponse.json({ error: 'Unable to complete the user operation.' }, { status: 500 });
+    const detail = process.env.NODE_ENV === 'development' && error instanceof Error ? error.message : 'Unable to complete the user operation.';
+    return NextResponse.json({ error: detail }, { status: 500 });
   }
 }
 
@@ -57,6 +58,7 @@ export async function PATCH(request: Request) {
     if (error instanceof Error && error.message === 'Unauthorized') return NextResponse.json({ error: 'Your session has expired. Please sign in again.' }, { status: 401 });
     if (error instanceof Error && error.message === 'Forbidden') return NextResponse.json({ error: 'Only administrators can manage users.' }, { status: 403 });
     console.error('[v0] Admin user operation failed:', error);
-    return NextResponse.json({ error: 'Unable to complete the user operation.' }, { status: 500 });
+    const detail = process.env.NODE_ENV === 'development' && error instanceof Error ? error.message : 'Unable to complete the user operation.';
+    return NextResponse.json({ error: detail }, { status: 500 });
   }
 }
