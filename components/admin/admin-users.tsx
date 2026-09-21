@@ -126,7 +126,7 @@ export function AdminUsers({
               </option>
             ))}
           </select>
-          <button className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+          <button className="rounded-md cursor-pointer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
             Add user
           </button>
         </form>
