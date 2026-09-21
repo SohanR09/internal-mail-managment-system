@@ -12,11 +12,6 @@ Send, receive, organize, and search mail inside your organization. No external p
 ![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000000?logo=shadcnui&logoColor=white)
 
 </div>
-<img width="1917" height="967" alt="image" src="https://github.com/user-attachments/assets/0109978e-dcc1-472e-96f6-37943e9350ab" />
-<img width="1432" height="876" alt="image" src="https://github.com/user-attachments/assets/b9b53235-9277-4d7a-87a3-ba144568c7e3" />
-<img width="1912" height="966" alt="image" src="https://github.com/user-attachments/assets/0761af4c-17bd-4044-83de-23213396ce95" />
-<img width="1917" height="965" alt="image" src="https://github.com/user-attachments/assets/f300cd5f-cfb8-41ae-912e-006afb982530" />
-
 ---
 
 ## Table of Contents
@@ -44,24 +39,32 @@ Send, receive, organize, and search mail inside your organization. No external p
 One **Filters** button holds every filter (unread, starred, attachment, category, sender, date range, sort). Search sits in the header.
 
 ![Inbox with the Filters panel open](docs/screenshots/inbox-filters.png)
+<img width="1917" height="967" alt="image" src="https://github.com/user-attachments/assets/178b8b33-fa80-461c-9a9c-acde9d6950a4" />
+
 
 ### Threaded mail view
 
 Opening a mail shows the full conversation with reply, reply all, forward, star, and delete actions.
 
 ![Mail thread view](docs/screenshots/mail-thread.png)
+<img width="1912" height="966" alt="image" src="https://github.com/user-attachments/assets/d745304b-2570-460e-a849-974f0c5d16d0" />
+
 
 ### Collapsed sidebar
 
 The sidebar collapses to an icon rail, and unread counts show as badges on the icons.
 
 ![Inbox with the sidebar collapsed](docs/screenshots/inbox-collapsed.png)
+<img width="1917" height="965" alt="image" src="https://github.com/user-attachments/assets/b1ab340b-2817-400d-9d3b-9dfef1564013" />
+
 
 ### Admin: user management
 
 Admins create accounts, assign roles, and activate or deactivate users. There is no public sign-up.
 
 ![Admin users page](docs/screenshots/admin-users.png)
+<img width="1432" height="876" alt="image" src="https://github.com/user-attachments/assets/555fbb89-843f-42e4-85a5-1501c560dc5d" />
+
 
 ---
 
