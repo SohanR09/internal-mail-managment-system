@@ -124,7 +124,9 @@ export function MailApp({
   const folder = (
     folders.includes(params.folder as Folder) ? params.folder : "inbox"
   ) as Folder;
-  const [selectedMailId, setSelectedMailId] = useState<string>(() => searchParams.get("m-id") ?? "");
+  const [selectedMailId, setSelectedMailId] = useState<string>(
+    () => searchParams.get("m-id") ?? "",
+  );
 
   const updateSelectedMailUrl = useCallback(
     (mailId?: string) => {
@@ -132,7 +134,9 @@ export function MailApp({
       if (mailId) next.set("m-id", mailId);
       else next.delete("m-id");
       const query = next.toString();
-      router.replace(`/mail/${folder}${query ? `?${query}` : ""}`, { scroll: false });
+      router.replace(`/mail/${folder}${query ? `?${query}` : ""}`, {
+        scroll: false,
+      });
     },
     [folder, router, searchParams],
   );
@@ -277,9 +281,9 @@ export function MailApp({
   useEffect(() => {
     const onEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && selectedMailId) {
-      setSelectedMailId("");
-      updateSelectedMailUrl();
-    }
+        setSelectedMailId("");
+        updateSelectedMailUrl();
+      }
     };
     window.addEventListener("keydown", onEscape);
     return () => window.removeEventListener("keydown", onEscape);
@@ -636,15 +640,15 @@ export function MailApp({
           <ReadingPane
             data={threadData}
             onBack={() => {
-          setSelectedMailId("");
-          updateSelectedMailUrl();
-        }}
+              setSelectedMailId("");
+              updateSelectedMailUrl();
+            }}
             onMove={(delta) => {
               const next = itemIds[itemIds.indexOf(selectedMailId) + delta];
               if (next) {
-            setSelectedMailId(next);
-            updateSelectedMailUrl(next);
-          }
+                setSelectedMailId(next);
+                updateSelectedMailUrl(next);
+              }
             }}
             onAction={act}
             onReply={startReply}
@@ -686,7 +690,9 @@ export function MailApp({
                 Unable to load mail.
               </p>
             ) : isLoading && !data ? (
-              <p className="p-6 text-sm text-muted-foreground">Loading mail���</p>
+              <p className="p-6 text-sm text-muted-foreground">
+                Loading mail���
+              </p>
             ) : items.length ? (
               items.map((item) => (
                 <MailRow
@@ -772,6 +778,7 @@ const MailRow = memo(function MailRow({
     >
       <input
         aria-label={`Select ${item.mail.subject}`}
+        className="cursor-pointer"
         type="checkbox"
         checked={checked}
         onClick={(event) => event.stopPropagation()}
@@ -783,7 +790,7 @@ const MailRow = memo(function MailRow({
         onClick={() =>
           void onAction(item.mail.id, item.state.isStarred ? "unstar" : "star")
         }
-        className="text-muted-foreground"
+        className="text-muted-foreground cursor-pointer"
       >
         {
           <span
@@ -800,7 +807,7 @@ const MailRow = memo(function MailRow({
       <button
         type="button"
         onClick={() => onOpen(item.mail.id)}
-        className="flex min-w-0 flex-1 items-center gap-4 text-left"
+        className="flex min-w-0 flex-1 items-center gap-4 text-left cursor-pointer"
       >
         <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">
           {item.sender?.initials ?? "?"}
