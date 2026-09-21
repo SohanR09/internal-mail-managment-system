@@ -47,5 +47,5 @@ export default async function DashboardPage() {
   const data = (await response.json()) as Record<string, unknown>;
 
   const defaultFolder = userSettings?.defaultFolder === 'draft' ? 'drafts' : (userSettings?.defaultFolder || 'inbox');
-  return <main className="min-h-screen bg-background text-foreground"><PageHeader title="Dashboard" backHref={`/mail/${defaultFolder}`} /><DashboardClient data={data} enabledWidgets={enabledWidgets} isAdmin={isAdmin} /></main>;
+  return <main className="h-full min-h-0 overflow-y-auto bg-background text-foreground"><PageHeader title="Dashboard" backHref={`/mail/${defaultFolder}`} /><DashboardClient data={data} enabledWidgets={enabledWidgets} isAdmin={isAdmin} /></main>;
 }

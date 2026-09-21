@@ -312,7 +312,7 @@
     "mailId": "mail_005",
     "folder": "inbox",
     "categoryId": "cat_work",
-    "isRead": false,
+    "isRead": true,
     "isStarred": false,
     "isImportant": false,
     "snoozedUntil": null,

@@ -179,4 +179,23 @@
   body {
     @apply h-full overflow-hidden bg-background text-foreground;
   }
+
+  #__next {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .mail-shell {
+    position: fixed;
+    inset: 0;
+  }
+
+  .mail-header {
+    grid-area: 1 / 1 / 2 / 3;
+    min-width: 0;
+  }
+
+  .mail-sidebar {
+    grid-area: 2 / 1 / 3 / 2;
+  }
 }
