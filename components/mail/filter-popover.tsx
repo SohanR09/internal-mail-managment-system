@@ -23,7 +23,7 @@ export function FilterPopover({ value, categories, senders, onApply }: Props) {
   const clear = () => setDraft({ unread: false, starred: false, sender: '', category: '', from: '', to: '', sort: 'newest' })
   return (
     <Popover open={open} onOpenChange={(next) => { setOpen(next); if (next) setDraft(value) }}>
-      <PopoverTrigger render={<Button variant="outline" size="sm" aria-label="Filters" />}>
+      <PopoverTrigger render={<Button variant="outline" size="sm" aria-label="Filters" className="cursor-pointer" />}>
         <FilterIcon data-icon="inline-start" />Filters{count ? <Badge variant="secondary" className="ml-1">{count}</Badge> : null}
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[min(92vw,380px)]">
