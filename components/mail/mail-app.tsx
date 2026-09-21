@@ -125,6 +125,11 @@ export function MailApp({
     folders.includes(params.folder as Folder) ? params.folder : "inbox"
   ) as Folder;
   const selectedMailId = params.mailId;
+  useEffect(() => {
+    if (selectedMailId || typeof window === "undefined") return;
+    const storedMailId = window.localStorage.getItem(`northstar:selected-mail:${folder}`);
+    if (storedMailId) router.replace(`/mail/${folder}/${storedMailId}`, { scroll: false });
+  }, [folder, router, selectedMailId]);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [activeUserCount, setActiveUserCount] = useState(0);
@@ -265,7 +270,7 @@ export function MailApp({
   }, [selectedMailId]);
   useEffect(() => {
     const onEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && selectedMailId) router.back();
+      if (event.key === "Escape" && selectedMailId) { window.localStorage.removeItem(`northstar:selected-mail:${folder}`); router.back(); }
     };
     window.addEventListener("keydown", onEscape);
     return () => window.removeEventListener("keydown", onEscape);
@@ -451,6 +456,7 @@ export function MailApp({
     setSelected([]);
   }
   function openMail(id: string) {
+    window.localStorage.setItem(`northstar:selected-mail:${folder}`, id);
     const item = items.find((entry) => entry.mail.id === id);
     if (folder === "drafts" && item) {
       setComposeDraftId(item.mail.id);
@@ -620,7 +626,7 @@ export function MailApp({
         {selectedMailId && threadData ? (
           <ReadingPane
             data={threadData}
-            onBack={() => router.back()}
+            onBack={() => { window.localStorage.removeItem(`northstar:selected-mail:${folder}`); router.back(); }}
             onMove={(delta) => {
               const next = itemIds[itemIds.indexOf(selectedMailId) + delta];
               if (next) router.push(`/mail/${folder}/${next}`);
@@ -713,7 +719,7 @@ export function MailApp({
           {threadData ? (
             <ReadingPane
               data={threadData}
-              onBack={() => router.back()}
+              onBack={() => { window.localStorage.removeItem(`northstar:selected-mail:${folder}`); router.back(); }}
               onMove={() => undefined}
               onAction={act}
               onReply={startReply}
