@@ -547,5 +547,37 @@
     "isDraft": false,
     "sentAt": "2026-09-21T11:06:17.568Z",
     "createdAt": "2026-09-21T11:06:17.568Z"
+  },
+  {
+    "id": "0809c3f2-acbe-4839-9255-03bc013c3bd7",
+    "threadId": "thread_005",
+    "parentMailId": "mail_007",
+    "senderId": "user_jordan",
+    "to": [
+      "people@northstar.co"
+    ],
+    "cc": [],
+    "bcc": [],
+    "subject": "Re: September benefits update",
+    "bodyHtml": "<p>Got it!<br /></p><hr /><p>On Sep 18, People Operations wrote:</p><blockquote><p>The September benefits update is now available.</p></blockquote><p></p><p>Jordan Smith\nSystem Administrator</p>",
+    "bodyText": "Got it!\n\n\n\n\nOn Sep 18, People Operations wrote:\n\n\n\nThe September benefits update is now available.\n\n\\n\\nJordan Smith\nSystem Administrator",
+    "isDraft": false,
+    "sentAt": "2026-09-21T14:54:31.542Z",
+    "createdAt": "2026-09-21T14:54:31.542Z"
+  },
+  {
+    "id": "65735117-ddc4-4d3b-ac20-7a37d23ca948",
+    "threadId": "65735117-ddc4-4d3b-ac20-7a37d23ca948",
+    "parentMailId": null,
+    "senderId": "user_jordan",
+    "to": [],
+    "cc": [],
+    "bcc": [],
+    "subject": "",
+    "bodyHtml": "<p></p>",
+    "bodyText": "",
+    "isDraft": true,
+    "sentAt": null,
+    "createdAt": "2026-09-21T14:56:11.430Z"
   }
 ]
