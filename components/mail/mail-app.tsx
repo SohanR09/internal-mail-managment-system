@@ -66,31 +66,18 @@ type DashboardSettingsResponse = {
 type Folder =
   | "inbox"
   | "starred"
-  | "snoozed"
   | "sent"
   | "drafts"
   | "all"
-  | "trash"
-  | "spam";
-const folders: Folder[] = [
-  "inbox",
-  "starred",
-  "snoozed",
-  "sent",
-  "drafts",
-  "all",
-  "trash",
-  "spam",
-];
+  | "trash";
+const folders: Folder[] = ["inbox", "starred", "sent", "drafts", "all", "trash"];
 const labels: Record<Folder, string> = {
   inbox: "Inbox",
   starred: "Starred",
-  snoozed: "Snoozed",
   sent: "Sent",
   drafts: "Drafts",
   all: "All mail",
   trash: "Trash",
-  spam: "Spam",
 };
 const cache = new Map<string, { etag: string | null; data: unknown }>();
 async function fetchWithEtag<T>(url: string): Promise<T> {

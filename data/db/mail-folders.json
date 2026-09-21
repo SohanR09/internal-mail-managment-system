@@ -1,0 +1,8 @@
+[
+  { "id": "inbox", "label": "Inbox", "icon": "inbox", "order": 1 },
+  { "id": "starred", "label": "Starred", "icon": "star", "order": 2 },
+  { "id": "sent", "label": "Sent", "icon": "send", "order": 3 },
+  { "id": "drafts", "label": "Drafts", "icon": "file-text", "order": 4 },
+  { "id": "all", "label": "All mails", "icon": "mail", "order": 5 },
+  { "id": "trash", "label": "Trash", "icon": "trash", "order": 6 }
+]

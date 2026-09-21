@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -11,14 +12,12 @@ import {
 import {
   ChevronsLeft,
   ChevronsRight,
-  Clock,
   FileText,
   Inbox,
   LayoutDashboard,
   Mail,
   PenSquare,
   Send,
-  ShieldAlert,
   Star,
   Trash2,
   Users,
@@ -33,16 +32,8 @@ type Folder =
   | "all"
   | "trash"
   | "spam";
-const folders: Array<[Folder, string, typeof Inbox]> = [
-  ["inbox", "Inbox", Inbox],
-  ["starred", "Starred", Star],
-  ["snoozed", "Snoozed", Clock],
-  ["sent", "Sent", Send],
-  ["drafts", "Drafts", FileText],
-  ["all", "All mail", Mail],
-  ["trash", "Trash", Trash2],
-  ["spam", "Spam", ShieldAlert],
-];
+const iconMap = { inbox: Inbox, star: Star, send: Send, "file-text": FileText, mail: Mail, trash: Trash2 } as const;
+const fetchFolders = (url: string) => fetch(url).then((response) => response.json());
 
 export function MailSidebar({
   collapsed,
@@ -62,6 +53,7 @@ export function MailSidebar({
   onToggle: () => void;
 }) {
   const router = useRouter();
+  const { data: folders = [] } = useSWR<Array<{ id: Folder; label: string; icon: keyof typeof iconMap }>>("/api/mail-folders", fetchFolders, { revalidateOnFocus: false });
   const item = (
     label: string,
     icon: typeof Inbox,
@@ -133,11 +125,12 @@ export function MailSidebar({
             <TooltipContent side="right">Compose</TooltipContent>
           </Tooltip>
           <nav className="flex flex-col gap-1">
-            {folders.map(([key, label, icon]) =>
-              item(label, icon, counts[key], folder === key, () =>
-                router.push(`/mail/${key}`),
-              ),
-            )}
+            {folders.map(({ id, label, icon }) => {
+              const FolderIcon = iconMap[icon];
+              return item(label, FolderIcon, counts[id], folder === id, () =>
+                router.push(`/mail/${id}`),
+              );
+            })}
           </nav>
           <div className="my-2 border-t border-border" />
           {/* {item("Dashboard", LayoutDashboard, undefined, false, () =>
