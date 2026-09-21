@@ -746,7 +746,7 @@ export function MailApp({
                   {data?.total ?? 0} messages
                 </p>
               </div>
-              <input
+              {/* <input
                 aria-label="Search mail"
                 value={query}
                 onChange={(event) => {
@@ -943,7 +943,7 @@ export function MailApp({
                     </button>
                   </div>
                 </details>
-              </div>
+              </div> */}
             </header>
             <div className="flex items-center gap-3 border-b border-border px-6 py-3">
               <input
