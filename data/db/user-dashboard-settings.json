@@ -1,7 +1,7 @@
 [
   {
     "userId": "user_jordan",
-    "theme": "dark",
+    "theme": "light",
     "density": "comfortable",
     "defaultFolder": "inbox",
     "sidebarCollapsed": false,
