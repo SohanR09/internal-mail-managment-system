@@ -1,9 +1,34 @@
 [
-  { "userId": "user_jordan", "version": 1 },
-  { "userId": "user_maya", "version": 1 },
-  { "userId": "user_nora", "version": 1 },
-  { "userId": "user_andre", "version": 1 },
-  { "userId": "user_hr", "version": 1 },
-  { "userId": "user_finance", "version": 1 },
-  { "userId": "user_eli", "version": 1 }
+  {
+    "userId": "user_jordan",
+    "version": 5
+  },
+  {
+    "userId": "user_maya",
+    "version": 1
+  },
+  {
+    "userId": "user_nora",
+    "version": 1
+  },
+  {
+    "userId": "user_andre",
+    "version": 1
+  },
+  {
+    "userId": "user_hr",
+    "version": 1
+  },
+  {
+    "userId": "user_finance",
+    "version": 1
+  },
+  {
+    "userId": "user_eli",
+    "version": 1
+  },
+  {
+    "userId": "user_60566edd-119e-4013-b011-3b3cabc82219",
+    "version": 4
+  }
 ]
