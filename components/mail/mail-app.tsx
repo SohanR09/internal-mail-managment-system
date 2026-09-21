@@ -2,7 +2,7 @@
 
 import useSWR, { mutate as mutateCache } from "swr";
 import dynamic from "next/dynamic";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import type { Recipient } from "@/components/mail/compose-window";
 const ComposeWindow = dynamic(
@@ -124,7 +124,18 @@ export function MailApp({
   const folder = (
     folders.includes(params.folder as Folder) ? params.folder : "inbox"
   ) as Folder;
-  const [selectedMailId, setSelectedMailId] = useState<string>();
+  const [selectedMailId, setSelectedMailId] = useState<string>(() => searchParams.get("m-id") ?? "");
+
+  const updateSelectedMailUrl = useCallback(
+    (mailId?: string) => {
+      const next = new URLSearchParams(searchParams.toString());
+      if (mailId) next.set("m-id", mailId);
+      else next.delete("m-id");
+      const query = next.toString();
+      router.replace(`/mail/${folder}${query ? `?${query}` : ""}`, { scroll: false });
+    },
+    [folder, router, searchParams],
+  );
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [activeUserCount, setActiveUserCount] = useState(0);
@@ -265,7 +276,10 @@ export function MailApp({
   }, [selectedMailId]);
   useEffect(() => {
     const onEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && selectedMailId) setSelectedMailId(undefined);
+      if (event.key === "Escape" && selectedMailId) {
+      setSelectedMailId("");
+      updateSelectedMailUrl();
+    }
     };
     window.addEventListener("keydown", onEscape);
     return () => window.removeEventListener("keydown", onEscape);
@@ -459,6 +473,7 @@ export function MailApp({
       return;
     }
     setSelectedMailId(id);
+    updateSelectedMailUrl(id);
   }
   async function signOut() {
     if (isSigningOut) return;
@@ -620,10 +635,16 @@ export function MailApp({
         {selectedMailId && threadData ? (
           <ReadingPane
             data={threadData}
-            onBack={() => setSelectedMailId(undefined)}
+            onBack={() => {
+          setSelectedMailId("");
+          updateSelectedMailUrl();
+        }}
             onMove={(delta) => {
               const next = itemIds[itemIds.indexOf(selectedMailId) + delta];
-              if (next) setSelectedMailId(next);
+              if (next) {
+            setSelectedMailId(next);
+            updateSelectedMailUrl(next);
+          }
             }}
             onAction={act}
             onReply={startReply}
