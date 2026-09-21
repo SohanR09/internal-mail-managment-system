@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import { headers, cookies } from 'next/headers';
 import dynamic from 'next/dynamic';
+import { PageHeader } from '@/components/layout/page-header';
 const DashboardClient = dynamic(() => import('@/components/dashboard/dashboard-client').then((module) => module.DashboardClient), { loading: () => <p className="p-8 text-sm text-muted-foreground">Loading dashboard...</p> });
 
 export const metadata = {
@@ -45,5 +46,6 @@ export default async function DashboardPage() {
 
   const data = (await response.json()) as Record<string, unknown>;
 
-  return <DashboardClient data={data} enabledWidgets={enabledWidgets} isAdmin={isAdmin} />;
+  const defaultFolder = userSettings?.defaultFolder === 'draft' ? 'drafts' : (userSettings?.defaultFolder || 'inbox');
+  return <main className="min-h-screen bg-background text-foreground"><PageHeader title="Dashboard" backHref={`/mail/${defaultFolder}`} /><DashboardClient data={data} enabledWidgets={enabledWidgets} isAdmin={isAdmin} /></main>;
 }
