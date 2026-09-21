@@ -43,18 +43,23 @@ async function writeCollection<T>(
 ): Promise<void> {
   ensureDbDir();
   const filePath = getFilePath(collection);
-  await getMutex(filePath);
-  const writePromise = new Promise<void>((resolve, reject) => {
-    const tempPath = `${filePath}.tmp`;
-    fs.writeFile(tempPath, JSON.stringify(data, null, 2), (err) => {
-      if (err) reject(err);
-      else
-        fs.rename(tempPath, filePath, (renameError) =>
-          renameError ? reject(renameError) : resolve(),
-        );
-    });
-  });
-  setMutex(filePath, writePromise);
+  const previousWrite = getMutex(filePath);
+  const writePromise = previousWrite.then(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        const tempPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
+        fs.writeFile(tempPath, JSON.stringify(data, null, 2), (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          fs.rename(tempPath, filePath, (renameError) =>
+            renameError ? reject(renameError) : resolve(),
+          );
+        });
+      }),
+  );
+  setMutex(filePath, writePromise.catch(() => undefined));
   await writePromise;
 }
 

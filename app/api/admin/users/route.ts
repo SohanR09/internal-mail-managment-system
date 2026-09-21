@@ -16,7 +16,10 @@ export async function GET() {
 }
 
 const createSchema = z.object({ name: z.string().min(1).max(120), email: z.string().email(), password: z.string().min(8), jobTitle: z.string().max(120).default(''), department: z.string().max(120).default(''), roleId: z.string().min(1) });
-const patchSchema = z.object({ action: z.enum(['role', 'status']), roleId: z.string().optional(), isActive: z.boolean().optional() });
+const patchSchema = z.discriminatedUnion('action', [
+  z.object({ action: z.literal('role'), roleId: z.string().min(1) }),
+  z.object({ action: z.literal('status'), isActive: z.boolean() }),
+]);
 
 export async function POST(request: Request) {
   try {
@@ -45,7 +48,10 @@ export async function PATCH(request: Request) {
     if (!parsed.success) return NextResponse.json({ error: 'Invalid update' }, { status: 400 });
     const target = await db.getUserById(userId); if (!target) return NextResponse.json({ error: 'User not found' }, { status: 404 });
     if (parsed.data.action === 'role') { if (!parsed.data.roleId || !await db.getRoleById(parsed.data.roleId)) return NextResponse.json({ error: 'Role not found' }, { status: 400 }); const current = await db.getUserRoles(userId); for (const role of current) await db.removeUserRole(userId, role.roleId); await db.insertUserRole({ userId, roleId: parsed.data.roleId }); }
-    else { if (userId === admin.id && parsed.data.isActive === false) return NextResponse.json({ error: 'You cannot deactivate yourself' }, { status: 400 }); await db.updateUser(userId, { isActive: parsed.data.isActive }); }
+    else {
+      if (userId === admin.id && parsed.data.isActive === false) return NextResponse.json({ error: 'You cannot deactivate yourself' }, { status: 400 });
+      await db.updateUser(userId, { isActive: parsed.data.isActive });
+    }
     return NextResponse.json({ users: await serializeUsers() });
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') return NextResponse.json({ error: 'Your session has expired. Please sign in again.' }, { status: 401 });
