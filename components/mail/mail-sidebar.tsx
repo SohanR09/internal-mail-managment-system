@@ -140,11 +140,11 @@ export function MailSidebar({
             )}
           </nav>
           <div className="my-2 border-t border-border" />
-          {item("Dashboard", LayoutDashboard, undefined, false, () =>
+          {/* {item("Dashboard", LayoutDashboard, undefined, false, () =>
             router.push("/dashboard"),
-          )}
+          )} */}
           {isAdmin
-            ? item("Admin users", Users, undefined, false, () =>
+            ? item("Admin page", Users, undefined, false, () =>
                 router.push("/admin/users"),
               )
             : null}
