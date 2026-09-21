@@ -572,58 +572,46 @@ export function MailApp({
           >
             <RefreshCwIcon />
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Open account menu"
-                  className="pointer-events-auto rounded-full"
-                />
-              }
-            />
-            <DropdownMenuContent align="end" className="w-64">
-              <DropdownMenuLabel>
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src={session?.avatar ?? undefined} alt="" />
-                    <AvatarFallback>
-                      {session?.name
-                        ?.split(" ")
-                        .map((part) => part[0])
-                        .join("") ?? "?"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">{session?.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {session?.email}
-                    </p>
-                    <Badge variant="secondary" className="mt-1">
-                      {session?.roles?.[0] ?? "employee"}
-                    </Badge>
-                  </div>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuItem onSelect={() => router.push("/profile")}>
-                <UserCircleIcon data-icon="inline-start" />
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => router.push("/settings")}>
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                disabled={isSigningOut}
-                variant="destructive"
-                onSelect={() => void signOut()}
+          <details className="relative">
+            <summary className="flex size-8 cursor-pointer list-none items-center justify-center rounded-full bg-muted text-xs font-semibold">
+              {session?.name
+                ?.split(" ")
+                .map((part) => part[0])
+                .join("")
+                .slice(0, 2) ?? "?"}
+            </summary>
+            <div className="absolute right-0 top-10 z-10 w-56 rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-lg">
+              <p className="font-medium">{session?.name ?? "Account"}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {session?.email ?? ""}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {session?.roles.join(", ") ?? ""}
+              </p>
+              <div className="my-2 border-t border-border" />
+              <button
+                type="button"
+                onClick={() => router.push("/profile")}
+                className="block w-full rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
               >
-                <LogOutIcon data-icon="inline-start" />
-                {isSigningOut ? "Signing out…" : "Sign out"}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                Profile
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push("/settings")}
+                className="block w-full rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
+              >
+                Settings
+              </button>
+              <button
+                type="button"
+                onClick={() => void signOut()}
+                className="block w-full rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
+              >
+                Sign out
+              </button>
+            </div>
+          </details>
         </div>
       </div>
       {/* <aside
