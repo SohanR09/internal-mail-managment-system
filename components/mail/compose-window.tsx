@@ -180,7 +180,7 @@ export function ComposeWindow({
         <button
           type="button"
           onClick={onClose}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground cursor-pointer"
         >
           ×
         </button>
