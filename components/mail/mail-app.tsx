@@ -844,11 +844,11 @@ function ReadingPane({
         <button
           type="button"
           onClick={onBack}
-          className="rounded-md px-3 py-2 text-sm hover:bg-accent"
+          className="rounded-md px-3 py-2 text-sm bg-amber-50 cursor-pointer hover:bg-accent"
         >
           ← Back
         </button>
-        <button
+        {/* <button
           type="button"
           aria-label="Previous mail"
           onClick={() => onMove(-1)}
@@ -863,7 +863,7 @@ function ReadingPane({
           className="rounded-md px-2 py-2 hover:bg-accent"
         >
           →
-        </button>
+        </button> */}
         <button
           type="button"
           aria-label="Star message"
@@ -873,28 +873,28 @@ function ReadingPane({
               data.mail.state.isStarred ? "unstar" : "star",
             )
           }
-          className="ml-auto text-lg"
+          className="ml-auto text-lg cursor-pointer"
         >
           {data.mail.state.isStarred ? "★" : "☆"}
         </button>
         <button
           type="button"
           onClick={() => onReply("reply")}
-          className="rounded-md px-2 py-1 text-sm hover:bg-accent"
+          className="rounded-md px-2 py-1 text-sm hover:bg-accent cursor-pointer"
         >
           Reply
         </button>
         <button
           type="button"
           onClick={() => onReply("replyAll")}
-          className="rounded-md px-2 py-1 text-sm hover:bg-accent"
+          className="rounded-md px-2 py-1 text-sm hover:bg-accent cursor-pointer"
         >
           Reply all
         </button>
         <button
           type="button"
           onClick={() => onReply("forward")}
-          className="rounded-md px-2 py-1 text-sm hover:bg-accent"
+          className="rounded-md px-2 py-1 text-sm hover:bg-accent cursor-pointer"
         >
           Forward
         </button>
@@ -918,7 +918,7 @@ function ReadingPane({
           {data.thread.map((item) => (
             <section
               key={item.mail.id}
-              className="rounded-lg border border-border p-6"
+              className="rounded-lg border bg-card border-border p-6"
             >
               <p className="mb-3 text-xs text-muted-foreground">
                 {item.sender?.name ?? "Unknown sender"} ·{" "}
