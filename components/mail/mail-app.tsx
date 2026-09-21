@@ -844,7 +844,7 @@ function ReadingPane({
         <button
           type="button"
           onClick={onBack}
-          className="rounded-md px-3 py-2 text-sm bg-amber-50 cursor-pointer hover:bg-accent"
+          className="rounded-md px-3 py-2 text-sm bg-card cursor-pointer hover:bg-accent"
         >
           ← Back
         </button>
