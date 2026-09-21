@@ -128,7 +128,7 @@ export function MailApp({
   useEffect(() => {
     if (selectedMailId || typeof window === "undefined") return;
     const storedMailId = window.localStorage.getItem(`northstar:selected-mail:${folder}`);
-    if (storedMailId) router.replace(`/mail/${folder}/${storedMailId}`, { scroll: false });
+    // if (storedMailId) router.replace(`/mail/${folder}/${storedMailId}`, { scroll: false });
   }, [folder, selectedMailId]);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
