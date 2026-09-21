@@ -108,7 +108,7 @@
     "theme": "light",
     "density": "comfortable",
     "defaultFolder": "inbox",
-    "sidebarCollapsed": false,
+    "sidebarCollapsed": true,
     "rowsPerPage": 25,
     "refreshIntervalSeconds": 15,
     "notificationsEnabled": true,
