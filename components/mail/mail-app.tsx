@@ -1,75 +1,40 @@
 'use client'
 
 import useSWR from 'swr'
-import { memo, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import type { Mail, MailCategory, UserMail } from '@/lib/db/types'
 
-interface MailItem {
-  mail: Mail
-  state: UserMail
-  sender: { id: string; name: string; initials: string; email: string } | null
-  category: MailCategory | null
-}
+interface MailItem { mail: Mail; state: UserMail; sender: { id: string; name: string; initials: string; email: string } | null; category: MailCategory | null }
 interface MailResponse { items: MailItem[]; total: number; page: number; pageSize: number }
 interface CountsResponse { counts: Record<string, number> }
-
+interface ThreadResponse { mail: MailItem; thread: MailItem[] }
 const folders = ['inbox', 'starred', 'snoozed', 'sent', 'drafts', 'all', 'trash', 'spam'] as const
 const labels: Record<string, string> = { inbox: 'Inbox', starred: 'Starred', snoozed: 'Snoozed', sent: 'Sent', drafts: 'Drafts', all: 'All mail', trash: 'Trash', spam: 'Spam' }
 const cache = new Map<string, { etag: string | null; data: unknown }>()
-
-async function fetchWithEtag<T>(url: string): Promise<T> {
-  const previous = cache.get(url)
-  const response = await fetch(url, { headers: previous?.etag ? { 'If-None-Match': previous.etag } : undefined })
-  if (response.status === 304 && previous) return previous.data as T
-  if (!response.ok) throw new Error('Unable to load mail')
-  const data = (await response.json()) as T
-  cache.set(url, { etag: response.headers.get('etag'), data })
-  return data
-}
-
-function formatDate(value: string | null): string {
-  if (!value) return 'Draft'
-  return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(new Date(value))
-}
+async function fetchWithEtag<T>(url: string): Promise<T> { const previous = cache.get(url); const response = await fetch(url, { headers: previous?.etag ? { 'If-None-Match': previous.etag } : undefined }); if (response.status === 304 && previous) return previous.data as T; if (!response.ok) throw new Error('Unable to load mail'); const data = (await response.json()) as T; cache.set(url, { etag: response.headers.get('etag'), data }); return data }
+function formatDate(value: string | null): string { if (!value) return 'Draft'; return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(new Date(value)) }
 
 export function MailApp() {
-  const [folder, setFolder] = useState<(typeof folders)[number]>('inbox')
-  const [query, setQuery] = useState('')
-  const [selected, setSelected] = useState<string[]>([])
+  const router = useRouter(); const params = useParams<{ folder?: string; mailId?: string }>();
+  const folder = (folders.includes(params.folder as typeof folders[number]) ? params.folder : 'inbox') as typeof folders[number];
+  const selectedMailId = params.mailId;
+  const [query, setQuery] = useState(''); const [selected, setSelected] = useState<string[]>([])
   const mailKey = `/api/mails?folder=${folder}&page=1&pageSize=25&q=${encodeURIComponent(query)}`
-  const { data, error, isLoading } = useSWR<MailResponse>(mailKey, fetchWithEtag, { keepPreviousData: true, refreshInterval: 15000, refreshWhenHidden: false, revalidateOnFocus: true })
+  const { data, error, isLoading, mutate } = useSWR<MailResponse>(mailKey, fetchWithEtag, { keepPreviousData: true, refreshInterval: 15000, refreshWhenHidden: false, revalidateOnFocus: true })
   const { data: counts } = useSWR<CountsResponse>('/api/mails/counts', fetchWithEtag, { refreshInterval: 15000, refreshWhenHidden: false })
-  const items = data?.items ?? []
-  const itemIds = useMemo(() => items.map((item) => item.mail.id), [items])
-  const allSelected = itemIds.length > 0 && itemIds.every((id) => selected.includes(id))
-
-  function toggleAll() {
-    setSelected(allSelected ? [] : itemIds)
-  }
-
-  function toggleSelected(id: string) {
-    setSelected((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
-  }
-
-  return (
-    <main className="flex min-h-screen bg-background text-foreground">
-      <aside className="flex w-60 shrink-0 flex-col border-r border-border p-4">
-        <div className="mb-8 flex items-center gap-2 px-2"><span className="size-2 rounded-full bg-primary" /><span className="font-semibold tracking-tight">Northstar Mail</span></div>
-        <button className="mb-5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground" type="button">Compose</button>
-        <nav className="flex flex-col gap-1" aria-label="Mail folders">
-          {folders.map((name) => <button key={name} type="button" onClick={() => { setFolder(name); setSelected([]) }} className={`flex items-center justify-between rounded-md px-3 py-2 text-left text-sm ${folder === name ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-accent/60'}`}><span>{labels[name]}</span>{counts?.counts[name] ? <span className="text-xs tabular-nums">{counts.counts[name]}</span> : null}</button>)}
-        </nav>
-      </aside>
-      <section className="min-w-0 flex-1">
-        <header className="flex items-center justify-between border-b border-border px-6 py-5"><div><h1 className="text-xl font-semibold">{labels[folder]}</h1><p className="text-sm text-muted-foreground">{data?.total ?? 0} messages</p></div><input aria-label="Search mail" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search mail" className="w-64 rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-offset-background focus:ring-2 focus:ring-ring" /></header>
-        <div className="flex items-center gap-3 border-b border-border px-6 py-3"><input aria-label="Select all messages" type="checkbox" checked={allSelected} onChange={toggleAll} /><span className="text-xs text-muted-foreground">{selected.length ? `${selected.length} selected` : 'Select all'}</span><button type="button" aria-label="More actions" className="ml-auto rounded-md px-2 py-1 text-lg text-muted-foreground hover:bg-accent">...</button></div>
-        {isLoading && !data ? <div className="flex flex-col gap-px p-6">{[1, 2, 3, 4, 5].map((row) => <div className="h-16 animate-pulse rounded-md bg-muted" key={row} />)}</div> : error ? <p className="p-6 text-sm text-destructive">Unable to load mail. Please try again.</p> : items.length === 0 ? <p className="p-12 text-center text-sm text-muted-foreground">No messages in {labels[folder].toLowerCase()}.</p> : <div className="flex flex-col">{items.map((item) => <MailRow key={item.mail.id} item={item} checked={selected.includes(item.mail.id)} onToggle={toggleSelected} />)}</div>}
-      </section>
-    </main>
-  )
+  const { data: threadData } = useSWR<ThreadResponse>(selectedMailId ? `/api/mails/${selectedMailId}` : null, fetchWithEtag)
+  const items = data?.items ?? []; const itemIds = useMemo(() => items.map((item) => item.mail.id), [items]); const allSelected = itemIds.length > 0 && itemIds.every((id) => selected.includes(id))
+  useEffect(() => { if (!selectedMailId) return; void fetch(`/api/mails/${selectedMailId}/read`, { method: 'PATCH' }).then(() => mutate()) }, [selectedMailId, mutate])
+  useEffect(() => { const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape' && selectedMailId) router.back() }; window.addEventListener('keydown', onKeyDown); return () => window.removeEventListener('keydown', onKeyDown) }, [router, selectedMailId])
+  function toggleAll() { setSelected(allSelected ? [] : itemIds) }
+  function toggleSelected(id: string) { setSelected((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]) }
+  function openMail(id: string) { router.push(`/mail/${folder}/${id}`); }
+  function move(delta: number) { if (!selectedMailId) return; const index = itemIds.indexOf(selectedMailId); const next = itemIds[index + delta]; if (next) router.push(`/mail/${folder}/${next}`) }
+  const reading = selectedMailId && threadData
+  return <main className="flex min-h-screen bg-background text-foreground"><aside className="flex w-60 shrink-0 flex-col border-r border-border p-4"><div className="mb-8 flex items-center gap-2 px-2"><span className="size-2 rounded-full bg-primary" /><span className="font-semibold tracking-tight">Northstar Mail</span></div><button className="mb-5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground" type="button">Compose</button><nav className="flex flex-col gap-1" aria-label="Mail folders">{folders.map((name) => <button key={name} type="button" onClick={() => { setSelected([]); router.push(`/mail/${name}`) }} className={`flex items-center justify-between rounded-md px-3 py-2 text-left text-sm ${folder === name ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-accent/60'}`}><span>{labels[name]}</span>{counts?.counts[name] ? <span className="text-xs tabular-nums">{counts.counts[name]}</span> : null}</button>)}</nav></aside><section className="min-w-0 flex-1">{reading ? <ReadingPane data={threadData} onBack={() => router.back()} onMove={move} /> : <><header className="flex items-center justify-between border-b border-border px-6 py-5"><div><h1 className="text-xl font-semibold">{labels[folder]}</h1><p className="text-sm text-muted-foreground">{data?.total ?? 0} messages</p></div><input aria-label="Search mail" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search mail" className="w-64 rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-offset-background focus:ring-2 focus:ring-ring" /></header><div className="flex items-center gap-3 border-b border-border px-6 py-3"><input aria-label="Select all messages" type="checkbox" checked={allSelected} onChange={toggleAll} /><span className="text-xs text-muted-foreground">{selected.length ? `${selected.length} selected` : 'Select all'}</span><button type="button" aria-label="More actions" className="ml-auto rounded-md px-2 py-1 text-lg text-muted-foreground hover:bg-accent">...</button></div>{isLoading && !data ? <div className="flex flex-col gap-px p-6">{[1, 2, 3, 4, 5].map((row) => <div className="h-16 animate-pulse rounded-md bg-muted" key={row} />)}</div> : error ? <p className="p-6 text-sm text-destructive">Unable to load mail. Please try again.</p> : items.length === 0 ? <p className="p-12 text-center text-sm text-muted-foreground">No messages in {labels[folder].toLowerCase()}.</p> : <div className="flex flex-col">{items.map((item) => <MailRow key={item.mail.id} item={item} checked={selected.includes(item.mail.id)} onToggle={toggleSelected} onOpen={openMail} />)}</div>}</>}</section></main>
 }
 
-const MailRow = memo(function MailRow({ item, checked, onToggle }: { item: MailItem; checked: boolean; onToggle: (id: string) => void }) {
-  return <article className={`flex items-center gap-4 border-b border-border px-6 py-4 ${item.state.isRead ? 'bg-background' : 'bg-accent/20'}`}><input aria-label={`Select ${item.mail.subject}`} type="checkbox" checked={checked} onChange={() => onToggle(item.mail.id)} /><div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">{item.sender?.initials ?? '?'}</div><div className="min-w-0 flex-1"><div className="flex items-center justify-between gap-3"><h2 className={`truncate text-sm ${item.state.isRead ? 'font-normal' : 'font-semibold'}`}>{item.mail.subject}</h2><time className="shrink-0 text-xs text-muted-foreground">{formatDate(item.mail.sentAt)}</time></div><p className="truncate text-xs text-muted-foreground">{item.sender?.name ?? 'Unknown sender'} · {item.mail.bodyText}</p></div></article>
-})
+const MailRow = memo(function MailRow({ item, checked, onToggle, onOpen }: { item: MailItem; checked: boolean; onToggle: (id: string) => void; onOpen: (id: string) => void }) { return <article className={`flex cursor-pointer items-center gap-4 border-b border-border px-6 py-4 ${item.state.isRead ? 'bg-background' : 'bg-accent/20'}`} onClick={() => onOpen(item.mail.id)}><input aria-label={`Select ${item.mail.subject}`} type="checkbox" checked={checked} onClick={(event) => event.stopPropagation()} onChange={() => onToggle(item.mail.id)} /><div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">{item.sender?.initials ?? '?'}</div><div className="min-w-0 flex-1"><div className="flex items-center justify-between gap-3"><h2 className={`truncate text-sm ${item.state.isRead ? 'font-normal' : 'font-semibold'}`}>{item.mail.subject}</h2><time className="shrink-0 text-xs text-muted-foreground">{formatDate(item.mail.sentAt)}</time></div><p className="truncate text-xs text-muted-foreground">{item.sender?.name ?? 'Unknown sender'} · {item.mail.bodyText}</p></div></article> })
 
+function ReadingPane({ data, onBack, onMove }: { data: ThreadResponse; onBack: () => void; onMove: (delta: number) => void }) { return <div className="min-h-screen"><div className="flex items-center gap-3 border-b border-border px-6 py-4"><button type="button" onClick={onBack} className="rounded-md px-3 py-2 text-sm hover:bg-accent">← Back</button><button type="button" aria-label="Previous mail" onClick={() => onMove(-1)} className="rounded-md px-2 py-2 hover:bg-accent">←</button><button type="button" aria-label="Next mail" onClick={() => onMove(1)} className="rounded-md px-2 py-2 hover:bg-accent">→</button></div><article className="mx-auto max-w-4xl p-8"><div className="mb-6 flex items-start justify-between gap-4"><div><h1 className="text-2xl font-semibold">{data.mail.mail.subject}</h1><p className="mt-2 text-sm text-muted-foreground">{data.mail.sender?.name ?? 'Unknown sender'} &lt;{data.mail.sender?.email ?? 'unknown'}&gt;</p></div>{data.mail.category ? <span className="rounded-full border border-border px-3 py-1 text-xs">{data.mail.category.name}</span> : null}</div><div className="flex flex-col gap-6">{data.thread.map((item) => <section key={item.mail.id} className="rounded-lg border border-border p-6"><p className="mb-3 text-sm font-medium">{item.sender?.name ?? 'Unknown sender'} <span className="font-normal text-muted-foreground">&lt;{item.sender?.email ?? 'unknown'}&gt;</span></p><div className="prose prose-invert max-w-none text-sm" dangerouslySetInnerHTML={{ __html: item.mail.bodyHtml }} /></section>)}</div></article></div> }
