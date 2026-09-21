@@ -81,17 +81,13 @@ const labels: Record<Folder, string> = {
   all: "All mail",
   trash: "Trash",
 };
-const cache = new Map<string, { etag: string | null; data: unknown }>();
 async function fetchWithEtag<T>(url: string): Promise<T> {
-  const previous = cache.get(url);
   const response = await fetch(url, {
-    headers: previous?.etag ? { "If-None-Match": previous.etag } : undefined,
+    cache: "no-store",
+    headers: { "Cache-Control": "no-cache" },
   });
-  if (response.status === 304 && previous) return previous.data as T;
   if (!response.ok) throw new Error("Unable to load mail");
-  const data = (await response.json()) as T;
-  cache.set(url, { etag: response.headers.get("etag"), data });
-  return data;
+  return (await response.json()) as T;
 }
 function dateLabel(value: string | null): string {
   return value
