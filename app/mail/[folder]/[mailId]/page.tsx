@@ -1,5 +1,9 @@
 import { MailApp } from '@/components/mail/mail-app'
+import { getSession } from '@/lib/auth/session'
+import { db } from '@/lib/db'
 
-export default function MailMessagePage() {
-  return <MailApp />
+export default async function MailMessagePage() {
+  const session = await getSession()
+  const initialSettings = session ? await db.getUserDashboardSettings(session.user.id) : undefined
+  return <MailApp initialSettings={initialSettings} />
 }
