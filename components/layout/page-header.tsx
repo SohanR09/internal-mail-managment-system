@@ -12,7 +12,7 @@ type PageHeaderProps = {
 export function PageHeader({ title, backHref = '/mail/inbox' }: PageHeaderProps) {
   const router = useRouter()
   return (
-    <header className="flex items-center gap-3 border-b border-border px-6 py-4">
+    <header className="flex bg-card items-center gap-3 border-b border-border px-6 py-4">
       <Button variant="ghost" size="icon" aria-label={`Back to mail from ${title}`} onClick={() => router.push(backHref)}>
         <ArrowLeftIcon />
       </Button>
