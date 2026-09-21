@@ -543,7 +543,7 @@
     "bcc": [],
     "subject": "test mail",
     "bodyHtml": "<p><strong>Test mail</strong></p><p>Jordan Smith\nSystem Administrator</p>",
-    "bodyText": "Test mail\\n\\nJordan Smith\nSystem Administrator",
+    "bodyText": "Test mail\n\nJordan Smith\nSystem Administrator",
     "isDraft": false,
     "sentAt": "2026-09-21T11:06:17.568Z",
     "createdAt": "2026-09-21T11:06:17.568Z"

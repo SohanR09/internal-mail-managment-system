@@ -16,11 +16,12 @@ export function etag(userId: string, version: number): string {
   return `W/"${userId}-${version}"`;
 }
 
-export function matchesFolder(state: UserMail, folder: MailFolder, now: number): boolean {
+export function matchesFolder(state: UserMail, folder: MailFolder, now: number, mail?: Mail): boolean {
+  if (mail?.isDraft && folder !== 'drafts') return false;
   const isSnoozed = Boolean(state.snoozedUntil && Date.parse(state.snoozedUntil) > now);
   if (folder === 'snoozed') return isSnoozed;
   if (isSnoozed) return false;
-  if (folder === 'all') return state.folder !== 'trash' && state.folder !== 'spam';
+  if (folder === 'all') return state.folder === 'inbox' || state.folder === 'sent';
   if (folder === 'starred') return state.isStarred && state.folder !== 'trash' && state.folder !== 'spam';
   if (folder === 'drafts') return state.folder === 'draft';
   return state.folder === folder;
