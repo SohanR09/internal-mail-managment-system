@@ -30,7 +30,12 @@ export async function POST(request: Request) {
     await db.insertUser({ id, name: input.name, email: input.email, passwordHash: await bcrypt.hash(input.password, 10), jobTitle: input.jobTitle, department: input.department, avatar: null, isActive: true, mustChangePassword: true, createdAt: new Date().toISOString() });
     await db.insertUserRole({ userId: id, roleId: input.roleId });
     return NextResponse.json({ users: await serializeUsers() }, { status: 201 });
-  } catch (error) { return NextResponse.json({ error: error instanceof Error && error.message === 'Forbidden' ? 'Forbidden' : 'Unauthorized' }, { status: error instanceof Error && error.message === 'Forbidden' ? 403 : 401 }); }
+  } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') return NextResponse.json({ error: 'Your session has expired. Please sign in again.' }, { status: 401 });
+    if (error instanceof Error && error.message === 'Forbidden') return NextResponse.json({ error: 'Only administrators can manage users.' }, { status: 403 });
+    console.error('[v0] Admin user operation failed:', error);
+    return NextResponse.json({ error: 'Unable to complete the user operation.' }, { status: 500 });
+  }
 }
 
 export async function PATCH(request: Request) {
@@ -39,8 +44,13 @@ export async function PATCH(request: Request) {
     const body = await request.json(); const userId = z.string().min(1).parse(body.userId); const parsed = patchSchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: 'Invalid update' }, { status: 400 });
     const target = await db.getUserById(userId); if (!target) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    if (parsed.data.action === 'role') { if (!parsed.data.roleId || !await db.getRoleById(parsed.data.roleId)) return NextResponse.json({ error: 'Role not found' }, { status: 400 }); const current = await db.getUserRoles(userId); await Promise.all(current.map((r) => db.removeUserRole(userId, r.roleId))); await db.insertUserRole({ userId, roleId: parsed.data.roleId }); }
+    if (parsed.data.action === 'role') { if (!parsed.data.roleId || !await db.getRoleById(parsed.data.roleId)) return NextResponse.json({ error: 'Role not found' }, { status: 400 }); const current = await db.getUserRoles(userId); for (const role of current) await db.removeUserRole(userId, role.roleId); await db.insertUserRole({ userId, roleId: parsed.data.roleId }); }
     else { if (userId === admin.id && parsed.data.isActive === false) return NextResponse.json({ error: 'You cannot deactivate yourself' }, { status: 400 }); await db.updateUser(userId, { isActive: parsed.data.isActive }); }
     return NextResponse.json({ users: await serializeUsers() });
-  } catch (error) { return NextResponse.json({ error: error instanceof Error && error.message === 'Forbidden' ? 'Forbidden' : 'Unauthorized' }, { status: error instanceof Error && error.message === 'Forbidden' ? 403 : 401 }); }
+  } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') return NextResponse.json({ error: 'Your session has expired. Please sign in again.' }, { status: 401 });
+    if (error instanceof Error && error.message === 'Forbidden') return NextResponse.json({ error: 'Only administrators can manage users.' }, { status: 403 });
+    console.error('[v0] Admin user operation failed:', error);
+    return NextResponse.json({ error: 'Unable to complete the user operation.' }, { status: 500 });
+  }
 }
