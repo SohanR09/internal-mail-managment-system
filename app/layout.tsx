@@ -1,10 +1,12 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { getSession } from '@/lib/auth/session'
+import { db } from '@/lib/db'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'Northstar Mail',
+  description: 'Internal company email system',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -33,14 +35,26 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await getSession()
+  let theme = 'dark'
+  let density = 'comfortable'
+
+  if (session) {
+    const settings = await db.getUserDashboardSettings(session.user.id)
+    if (settings) {
+      theme = settings.theme
+      density = settings.density
+    }
+  }
+
   return (
-    <html lang="en">
-      <body className="antialiased">
+    <html lang="en" data-theme={theme} data-density={density}>
+      <body className={`antialiased ${theme === 'dark' || (theme === 'system' && true) ? 'dark' : ''}`}>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

@@ -69,7 +69,7 @@ export interface UserVersion {
 
 export interface UserDashboardSettings {
   userId: string;
-  theme: 'light' | 'dark';
+  theme: 'light' | 'dark' | 'system';
   density: 'comfortable' | 'compact';
   defaultFolder: 'inbox' | 'sent' | 'draft' | 'archive' | 'trash';
   sidebarCollapsed: boolean;
